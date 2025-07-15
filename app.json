@@ -1,4 +1,14 @@
 {
   "name": "feeling-burnout",
-  "slug": "feeling-burnout"
+  "slug": "feeling-burnout",
+  "scheme": "feelingburnout",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "plugins": [
+    "expo-router"
+  ],
+  "userInterfaceStyle": "automatic",
+  "web": {
+    "bundler": "metro"
+  }
 }
