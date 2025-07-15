@@ -5,12 +5,16 @@ import { Button, IconButton } from '@/components/base/Button'
 import { ArrowUp, EllipsisVertical, Images, Menu, Plus, SidebarOpenIcon } from 'lucide-react-native'
 import Animated from 'react-native-reanimated'
 import { Colors } from '@/constants/themes'
+import { useState } from 'react'
+import { transform } from '@babel/core'
 
 export default function ChatScreen() {
   const { colorScheme = 'light' } = useColorScheme()
 
+  const [inputHeight, setInputHeight] = useState(45) // Default height for the input
+
   return (
-    <View className='flex-1'>
+    <View className='flex-1 bg-background'>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: 'black' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -62,16 +66,35 @@ export default function ChatScreen() {
             </View>
           </Animated.ScrollView>
 
-          <View className="px-4 py-3 flex-row gap-2">
-            <IconButton icon={<Images color={Colors[colorScheme].textPrimary} size={20} />} onClick={() => { }} className='aspect-square !bg-card' />
-            <View className="flex-1 flex-row items-center px-4 py-0.5 bg-card rounded-full">
+          <View className="px-4 py-3 flex-row gap-2 items-end">
+            {/* Left Icon */}
+            <IconButton
+              icon={<Images color={Colors[colorScheme].textPrimary} size={20} />}
+              onClick={() => { }}
+              className="h-[48px] w-[48px] !bg-card"
+            />
+
+            {/* Input Container */}
+            <View className="flex-1 flex-row bg-card rounded-[24px] pl-4 py-1 gap-1 items-center">
+              {/* Growing TextInput */}
               <TextInput
+                onContentSizeChange={(event) => {
+                  setInputHeight(Math.max(40, event.nativeEvent.contentSize.height));
+                }}
+                style={{ height: Math.max(40, inputHeight), maxHeight: 200, textAlignVertical: 'center' }} // Set min and max height
                 placeholder="Type a message"
-                className="flex-1 text-lg text-text-primary"
+                multiline
+                className="flex-1 text-lg text-text-primary py-2"
                 placeholderTextColor={colorScheme === 'light' ? '#00000099' : '#ffffff99'}
               />
-              <View className='p-1.5 -mx-3 '>
-                <IconButton icon={<ArrowUp color={Colors[colorScheme].textPrimary} size={20} />} onClick={() => { }} className='aspect-square flex-1 bg-gray-highlight-100' />
+
+              {/* Send Button */}
+              <View className="h-[36px] w-[36px] mr-1.5 mb-0.5 justify-center items-center rounded-full bg-gray-highlight-100 self-end">
+                <IconButton
+                  icon={<ArrowUp color={Colors[colorScheme].textPrimary} size={20} />}
+                  onClick={() => { }}
+                  className="aspect-square"
+                />
               </View>
             </View>
           </View>

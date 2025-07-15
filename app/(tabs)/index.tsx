@@ -65,14 +65,14 @@ export default function HomeScreen() {
               <Text className='text-3xl text-text-primary mt-6'>
                 You logged your mood as <Text className='mt font-extrabold'>Happy</Text>.
               </Text>
-              <View className='mt-10 justify-center items-center'>
-                <TouchableOpacity className='border border-text-secondary rounded-full py-2 px-4'>
+              {/* <View className='mt-10 justify-center items-center'>
+                <TouchableOpacity className='bg-gray-highlight-100 rounded-full py-2 px-4'>
                   <Text className='text-text-primary text-center'>Change Log</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </BottomWaveCard>
 
-            <View className='px-sides mt-8 mb-8'>
+            <View className='px-sides mt-10 mb-8'>
               <View className='flex-row gap-4'>
                 <InfoCard type='chat' containerClass='flex-1' />
                 <InfoCard type='breathing' containerClass='flex-1' />
