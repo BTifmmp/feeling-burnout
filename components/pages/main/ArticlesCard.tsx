@@ -11,7 +11,7 @@ interface ArticlesCardProps {
 const ArticlesCard: React.FC<ArticlesCardProps> = ({ className }) => {
   return (
     <Card className={`p-5 ${className}`}>
-      <Text className='text-text-primary text-md font-semibold mb-4'>
+      <Text className='text-text-primary text-base font-semibold mb-4'>
         Whats burnout?
       </Text>
       <View className='-mx-5'>
@@ -23,7 +23,7 @@ const ArticlesCard: React.FC<ArticlesCardProps> = ({ className }) => {
           </View>
         </Animated.ScrollView>
       </View>
-      <Text className='text-text-primary text-md font-semibold mb-4 mt-8'>
+      <Text className='text-text-primary text-base font-semibold mb-4 mt-8'>
         Good Habits
       </Text>
       <View className='-mx-5'>

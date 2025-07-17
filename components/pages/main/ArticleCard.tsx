@@ -20,7 +20,7 @@ export default function ArticleCard() {
           Article Title too wgewgw
         </Text>
         <Text
-          className="text-md text-text-secondary mt-1 text-ellipsis"
+          className="text-base text-text-secondary mt-1 text-ellipsis"
           numberOfLines={1}
         >
           5 min read

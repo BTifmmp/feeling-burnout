@@ -51,8 +51,8 @@ export const Colors = {
     blueButtonText: '#ffffff',
 
     grayHighlight100: '#383838',
-    grayHighlight200: '#484848',
-    grayHighlight300: '#272727',
+    grayHighlight200: '#404040',
+    grayHighlight300: '#484848',
 
     moodColors: {
       0: '#FF6B6B',  // red
