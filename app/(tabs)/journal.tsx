@@ -1,11 +1,18 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaView from '@/components/base/MySafeArea';
 import { format, parseISO } from 'date-fns';
 import { useColorScheme } from 'nativewind';
 import Animated from 'react-native-reanimated';
-import { CalendarDaysIcon, Plus } from 'lucide-react-native';
+import { Edit, Plus, Trash } from 'lucide-react-native';
 import { Colors } from '@/constants/themes';
+import { router, useRouter } from 'expo-router';
+import MoodBadge, { moodStyleMap, MoodType } from '@/components/pages/journal/MoodBadge';
+import { Pressable } from 'react-native-gesture-handler';
+import { Button } from '@/components/base/Button';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useMenuStyles } from '@/styles/menuStyles';
+import { useJournalEditStore } from '@/store/journalEditStore';
 
 const dummyEntries = [
   { id: 1, date: '2025-07-15', content: 'Went on a long walk and cleared my head.', flair: 'positive' },
@@ -20,12 +27,6 @@ const dummyEntries = [
   { id: 10, date: '2025-05-01', content: 'New month, new intentions. Writing goals down.', flair: 'neutral' },
 ];
 
-// Flair badge style map
-const flairStyleMap = {
-  positive: 'mood-colors-4',
-  negative: 'mood-colors-0',
-  neutral: 'mood-colors-2',
-};
 
 const groupByMonth = (entries: typeof dummyEntries) => {
   const grouped: { [key: string]: typeof dummyEntries } = {};
@@ -38,54 +39,46 @@ const groupByMonth = (entries: typeof dummyEntries) => {
   return grouped;
 };
 
-const flairOptions = ['all', 'positive', 'negative', 'neutral'];
 
 export default function Journal() {
   const { colorScheme = 'light' } = useColorScheme();
-  const [selectedFlair, setSelectedFlair] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
+  const [selectedBadge, setSelectedBadge] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
 
-  const filteredEntries = selectedFlair === 'all'
+  const filteredEntries = selectedBadge === 'all'
     ? dummyEntries
-    : dummyEntries.filter((entry) => entry.flair === selectedFlair);
+    : dummyEntries.filter((entry) => entry.flair === selectedBadge);
 
   const groupedEntries = groupByMonth(filteredEntries);
 
+  const router = useRouter();
+
+  const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
-      <ScrollView contentContainerClassName="p-sides">
+    <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
+      <Animated.ScrollView contentContainerClassName="p-sides">
+        <Text className="text-4xl text-text-primary font-bold mb-2 mt-1">Journal</Text>
 
-        <Text className="text-4xl text-text-primary font-bold mb-2 mt-4">Journal</Text>
+        <Button variant='highlight100'
+          style={{ marginTop: 12, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between' }}
+          onPress={() => router.push('/journal-entry')}>
+          <Text className="ml-2 text-lg text-text-primary font-medium">Add Entry</Text>
+          <Plus color={Colors[colorScheme].textPrimary} />
+        </Button>
 
-        <TouchableOpacity className="bg-gray-highlight-100 rounded-full py-3 mt-2" onPress={() => console.log('Add new entry')}>
-          <View className="flex-row items-center bg-primary px-5 rounded-full justify-between">
-            <Text className="ml-2 text-lg text-text-primary font-medium">Add Entry</Text>
-            <Plus color={Colors[colorScheme].textPrimary} />
+        <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6">
+          <View className='flex-row gap-2.5'>
+            {badgeOptions.map((badge) => {
+              const isSelected = badge === selectedBadge;
+              return (
+                <Pressable
+                  key={badge}
+                  onPress={() => setSelectedBadge(badge as any)}>
+                  <MoodBadge mood={badge} isSelected={isSelected} containerClassName='px-4 py-2' />
+                </Pressable>
+              );
+            })}
           </View>
-        </TouchableOpacity>
-
-        <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mt-6">
-          {flairOptions.map((option) => {
-            const isSelected = selectedFlair === option;
-            const flairClass = option !== 'all' ? flairStyleMap[option as keyof typeof flairStyleMap] : 'text-primary';
-            return (
-              <TouchableOpacity
-                key={option}
-                onPress={() => setSelectedFlair(option as any)}
-                className={`mr-3 px-4 py-2 rounded-full ${isSelected
-                  ? `bg-${flairClass}`
-                  : 'bg-gray-highlight-100'
-                  }`}
-              >
-                <Text className={`capitalize text-lg font-medium ${isSelected
-                  ? (colorScheme === 'light' && option === 'all' ? 'text-white' : 'text-black')
-                  : 'text-text-secondary'
-                  }`}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
         </Animated.ScrollView>
 
         {Object.entries(groupedEntries).map(([month, entries]) => (
@@ -93,39 +86,89 @@ export default function Journal() {
             <Text className="text-xl text-text-primary font-medium mt-8 mb-2">{month}</Text>
             {entries.map((entry, index) => {
               const date = parseISO(entry.date);
-              const flairClass = flairStyleMap[entry.flair as keyof typeof flairStyleMap];
 
               return (
                 <View key={entry.id}>
-                  <View className="py-3">
-                    <Text className="text-base font-medium text-text-primary">
-                      {format(date, 'EEE d')}
-                    </Text>
-                    {
-                      colorScheme === 'dark'
-                        ?
-                        <View className={`px-2 py-0.5 rounded-full self-start mt-2 border border-${flairClass} opacity-80`}>
-                          <Text className={`text-xs text-${flairClass} font-medium capitalize`}>{entry.flair}</Text>
-                        </View>
-                        :
-                        <View className={`px-2 py-0.5 rounded-full self-start mt-2 bg-${flairClass}`}>
-                          <Text className={`text-xs text-text-full font-medium capitalize`}>{entry.flair}</Text>
-                        </View>
-                    }
-                    <Text className="text-lg text-text-secondary leading-relaxed mt-2">
-                      {entry.content}
-                    </Text>
-                  </View>
-                  {index !== entries.length - 1 && (
-                    <View className="border-b-hairline border-gray-highlight-300" />
-                  )}
+                  <JournalEntry
+                    key={entry.id}
+                    date={date}
+                    id={entry.id}
+                    content={entry.content}
+                    badge={entry.flair as Exclude<MoodType, 'all'>}
+                    colorScheme={colorScheme}
+                  />
+                  {index !== entries.length - 1 && <View className='border-b-hairline border-gray-highlight-300' />}
                 </View>
               );
             })}
           </View>
         ))}
 
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
+}
+
+/////////////////////////////////////
+// JournalEntry component
+/////////////////////////////////////
+interface JournalEntryProps {
+  id: number;
+  date: Date;
+  content: string;
+  badge: Exclude<MoodType, 'all'>;
+  colorScheme: 'light' | 'dark';
+}
+
+
+function JournalEntry({ date, id, content, badge, colorScheme }: JournalEntryProps) {
+  const flairClass = moodStyleMap[badge as Exclude<MoodType, 'all'>] || 'text-primary';
+  const { editingEntry, setEditingEntry } = useJournalEditStore();
+  const menuRef = React.useRef<Menu>(null);
+  const menuStyles = useMenuStyles();
+
+  return (
+    <View>
+      <View className='absolute left-1/4 top-3 z-10'>
+        <Menu ref={menuRef}>
+          <MenuTrigger style={{ marginLeft: 10 }} />
+          <MenuOptions customStyles={{ optionsContainer: menuStyles.optionsContainer }}>
+            <MenuOption onSelect={() => Alert.alert('Delete Chat')}>
+              <View style={menuStyles.optionContainer}>
+                <Trash size={18} color={Colors[colorScheme].textPrimary} />
+                <Text style={menuStyles.optionText}>Delete Entry</Text>
+              </View>
+            </MenuOption>
+            <MenuOption onSelect={() => { setEditingEntry({ id, content, badge, date }); router.push('/edit-journal-entry'); }}>
+              <View style={menuStyles.optionContainer}>
+                <Edit size={18} color={Colors[colorScheme].textPrimary} />
+                <Text style={menuStyles.optionText}>Edit</Text>
+              </View>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
+      </View>
+      <Pressable onLongPress={() => { menuRef.current?.open() }}>
+        <View className="py-3">
+          <Text className="text-base font-medium text-text-primary">
+            {format(date, 'EEE d')}
+          </Text>
+          {
+            colorScheme === 'dark'
+              ?
+              <View className={`px-2 py-0.5 rounded-full self-start mt-2 border border-${flairClass} opacity-80`}>
+                <Text className={`text-xs text-${flairClass} font-medium capitalize`}>{badge}</Text>
+              </View>
+              :
+              <View className={`px-2 py-0.5 rounded-full self-start mt-2 bg-${flairClass}`}>
+                <Text className={`text-xs text-text-full font-medium capitalize`}>{badge}</Text>
+              </View>
+          }
+          <Text className="text-lg text-text-secondary leading-relaxed mt-2">
+            {content}
+          </Text>
+        </View>
+      </Pressable>
+    </View >
+  )
 }

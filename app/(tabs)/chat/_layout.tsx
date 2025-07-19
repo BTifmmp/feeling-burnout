@@ -2,7 +2,7 @@ import { Drawer } from 'expo-router/drawer';
 import { useColorScheme } from 'nativewind';
 import { ScrollView, Text, Pressable, View, Alert } from 'react-native';
 import { Colors } from '@/constants/themes';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BorderlessButton, GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { useChatStore } from '@/store/chatStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
@@ -46,32 +46,30 @@ export default function CustomDrawer() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer
-        drawerContent={({ navigation, state }) => (
-          <CustomDrawerContent
-            navigation={navigation}
-            state={state}
-            colorScheme={colorScheme}
-          />
-        )}
-        screenOptions={{
-          swipeEdgeWidth: 200,
-          drawerStyle: {
-            backgroundColor: Colors[colorScheme].background,
-            width: '70%',
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-          },
-          headerShown: false,
-        }}
-      >
-        <Drawer.Screen
-          name="index"
-          options={{ title: 'Chat' }}
+    <Drawer
+      drawerContent={({ navigation, state }) => (
+        <CustomDrawerContent
+          navigation={navigation}
+          state={state}
+          colorScheme={colorScheme}
         />
-      </Drawer>
-    </GestureHandlerRootView>
+      )}
+      screenOptions={{
+        swipeEdgeWidth: 200,
+        drawerStyle: {
+          backgroundColor: Colors[colorScheme].background,
+          width: '70%',
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        },
+        headerShown: false,
+      }}
+    >
+      <Drawer.Screen
+        name="index"
+        options={{ title: 'Chat' }}
+      />
+    </Drawer>
   );
 }
 
@@ -169,19 +167,19 @@ function ChatDrawerItem({ chat, isFocused, setCurrentChatId, navigation, menuSty
         </Menu>
       </View>
       <View className='overflow-hidden rounded-full mx-2'>
-        <Pressable
-          android_ripple={{ color: Colors[colorScheme].grayHighlight100 }}
+        <RectButton
+          activeOpacity={0.7}
+          underlayColor='white'
           onPress={() => {
             setCurrentChatId(chat.id);
             navigation.closeDrawer();
           }}
-          onLongPress={() => menuRef.current?.open()}
-          className={`py-2.5 px-4 ${isFocused ? 'bg-gray-highlight-100' : 'transparent'}`}
+          onLongPress={menuRef.current?.open}
         >
           <Text className={`${isFocused ? 'text-text-primary' : 'text-text-secondary'} text-lg`}>
             {chat.title}
           </Text>
-        </Pressable>
+        </RectButton>
       </View>
     </View>
   );

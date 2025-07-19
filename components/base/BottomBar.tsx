@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, Text } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
+import Animated, { Easing, FadeIn, FadeOut } from 'react-native-reanimated';
+
 
 const icons = {
   home: {
@@ -51,7 +53,9 @@ export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             style={{ position: 'relative' }}
           >
             {isFocused && (
-              <View
+              <Animated.View
+                entering={FadeIn.duration(200).easing(Easing.inOut(Easing.ease))}
+                exiting={FadeOut.duration(100).easing(Easing.inOut(Easing.ease))}
                 className="absolute w-[5rem] h-[4.0rem] rounded-3xl bg-gray-highlight-100"
               />
             )}

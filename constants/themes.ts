@@ -12,11 +12,7 @@ export const Colors = {
     textPrimary: '#333333',
     textSecondary: '#555555',
 
-    grayButton: '#e0e0e0',
-    grayButtonText: '#333333',
-
-    blueButton: '#007bff',
-    blueButtonText: '#ffffff',
+    blueButton: '#339CFF',
 
     grayHighlight100: '#f0f0f0',
     grayHighlight200: '#e0e0e0',
@@ -34,21 +30,17 @@ export const Colors = {
   dark: {
     background: '#151515',
     backgroundReversed: '#151515',
-    backgroundSecondary: '#222222',
+    backgroundSecondary: '#262626',
 
-    card: '#262626',
+    card: '#2a2a2a',
     cardSecondary: '#3e3e3e',
-    cardReversed: '#262626',
+    cardReversed: '#2a2a2a',
 
     textFull: '#ffffff',
     textPrimary: '#f0f0f0',
     textSecondary: '#bababa',
 
-    grayButton: '#272727',
-    grayButtonText: '#f0f0f0',
-
     blueButton: '#339CFF',
-    blueButtonText: '#ffffff',
 
     grayHighlight100: '#383838',
     grayHighlight200: '#404040',

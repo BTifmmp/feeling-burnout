@@ -1,10 +1,19 @@
 import CustomTabBar from '@/components/base/BottomBar';
+import { Colors } from '@/constants/themes';
 import { Tabs } from 'expo-router';
+import { colorScheme, useColorScheme } from 'nativewind';
 
 export default function TabsLayout() {
+
+  const { colorScheme = 'light' } = useColorScheme();
   return (
     <Tabs
-      screenOptions={{ headerShown: false }}
+      initialRouteName='index'
+      screenOptions={{
+        headerShown: false,
+        animation: 'shift',
+        sceneStyle: { backgroundColor: Colors[colorScheme].background },
+      }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen name="index" options={{ title: 'Home' }} />

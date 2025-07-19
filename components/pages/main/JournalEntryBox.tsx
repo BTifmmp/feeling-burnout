@@ -1,8 +1,10 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { useState } from 'react';
 import { Button } from '@/components/base/Button';
 import { Card } from '@/components/base/Card';
 import { useColorScheme } from 'nativewind';
+import MoodBadge, { MoodType } from '@/components/pages/journal/MoodBadge';
+import { Pressable } from 'react-native-gesture-handler';
 
 interface JournalEntryBoxProps {
   className?: string;
@@ -10,10 +12,10 @@ interface JournalEntryBoxProps {
 
 export default function JournalEntryBox({ className }: JournalEntryBoxProps) {
   const [entry, setEntry] = useState('');
-  const [flair, setFlair] = useState<'neutral' | 'positive' | 'negative'>('neutral');
+  const [moodBadge, setMoodBadge] = useState<'neutral' | 'positive' | 'negative'>('neutral');
 
   const { colorScheme = 'light' } = useColorScheme();
-  const flairs = ['positive', 'neutral', 'negative'] as const;
+  const flairs: MoodType[] = ['positive', 'neutral', 'negative'];
 
   return (
     <Card className={className}>
@@ -28,35 +30,20 @@ export default function JournalEntryBox({ className }: JournalEntryBoxProps) {
 
       {/* Flair Selector */}
       <View className="flex-row gap-2 mb-3">
-        {flairs.map((f) => {
-          const isSelected = flair === f;
-          const bg =
-            f === 'positive' ? 'mood-colors-4' :
-              f === 'negative' ? 'mood-colors-0' :
-                'mood-colors-2';
-
+        {flairs.map((badge) => {
+          const isSelected = moodBadge === badge;
           return (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFlair(f as any)}
-              className={`px-3 py-1 rounded-full ${isSelected
-                ? `bg-${bg}`
-                : 'bg-gray-highlight-100'
-                }`}
-            >
-              <Text className={`capitalize text-base font-medium ${isSelected
-                ? 'text-black'
-                : 'text-text-secondary'
-                }`}>
-                {f}
-              </Text>
-            </TouchableOpacity>
+            <Pressable
+              key={badge}
+              onPress={() => setMoodBadge(badge as any)}>
+              <MoodBadge mood={badge} isSelected={isSelected} containerClassName='!py-1' textClassName='!text-base font-normal' inactiveColor='bg-gray-highlight-100' />
+            </Pressable>
           );
         })}
       </View>
 
       <TextInput
-        className="bg-gray-highlight-100 h-36 rounded-xl p-4 text-base text-text-primary"
+        className="bg-gray-highlight-100 h-36 rounded-2xl p-4 text-base text-text-primary"
         multiline
         numberOfLines={4}
         placeholder="Achievements, challenges, or anything on your mind..."
@@ -68,7 +55,7 @@ export default function JournalEntryBox({ className }: JournalEntryBoxProps) {
 
       {/* Done Button */}
       <View className="flex-row justify-end mt-4">
-        <Button onClick={() => { }} label='Add' />
+        <Button disabled={!(entry.length > 0)} style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add' onPress={() => { }} />
       </View>
     </Card>
   );

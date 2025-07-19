@@ -15,6 +15,7 @@ import { IconButton } from '@/components/base/Button';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
+import { BorderlessButton } from 'react-native-gesture-handler';
 
 interface MoodData {
   [dateKey: string]: number; // Mood scale 0–5
@@ -45,13 +46,16 @@ export default function MoodGrid({ moodData = {}, className }: Props) {
   return (
     <Card className={className}>
       <View className={`flex-row items-center justify-between ${className}`}>
-        <IconButton className='p-2' onClick={() => { }} icon={<ChevronLeft size={20} color={Colors[colorScheme].textPrimary} style={{ transform: [{ translateX: -0.5 }] }} />} />
+        <IconButton variant='highlight100' style={{ padding: 8 }} onPress={() => { }}
+          icon={<ChevronLeft size={22} color={Colors[colorScheme].textPrimary} style={{ transform: [{ translateX: -0.5 }] }} />}
+        />
 
         <Text className="text-lg text-text-primary font-semibold text-center flex-1 mx-2">
           {monthString}
         </Text>
-
-        <IconButton className='p-2' onClick={() => { }} icon={<ChevronRight size={20} color={Colors[colorScheme].textPrimary} style={{ transform: [{ translateX: 0.5 }] }} />} />
+        <IconButton variant='highlight100' style={{ padding: 8 }} onPress={() => { }}
+          icon={<ChevronRight size={22} color={Colors[colorScheme].textPrimary} style={{ transform: [{ translateX: 0.5 }] }} />}
+        />
       </View>
       <View className="flex flex-col gap-2 mt-5">
         {rows.map((week, weekIndex) => (
@@ -66,12 +70,14 @@ export default function MoodGrid({ moodData = {}, className }: Props) {
                 ? `bg-mood-colors-${mood}`
                 : (isCurrentMonth ? 'bg-gray-highlight-100' : 'bg-transparent');
 
+              const textColor = colorScheme === 'dark' && bgClass === 'bg-gray-highlight-100' ? 'text-text-primary' : 'text-black';
+
               return (
                 <View
                   key={dayIndex}
                   className={`flex-1 h-6 items-center justify-center rounded-full ${bgClass}`}
                 >
-                  <Text className={`text-xs text-white ${isToday ? 'font-bold' : ''}`}>
+                  <Text className={`text-xs ${textColor} ${isToday ? 'font-bold' : ''}`}>
                     {isCurrentMonth ? format(date, 'd') : ''}
                   </Text>
                 </View>
