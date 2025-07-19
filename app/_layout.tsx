@@ -26,6 +26,7 @@ export default function RootLayout() {
               <Stack.Screen name="journal-entry" options={{ presentation: 'modal' }} />
               <Stack.Screen name="edit-journal-entry" options={{ presentation: 'modal' }} />
               <Stack.Screen name="mood-calendar" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="meditation" options={{ presentation: 'modal' }} />
               <Stack.Screen name="(tabs)" />
             </Stack>
           </MenuProvider>

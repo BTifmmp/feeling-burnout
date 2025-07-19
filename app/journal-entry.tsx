@@ -8,13 +8,11 @@ import {
 } from 'react-native';
 import SafeAreaView from '@/components/base/MySafeArea';
 import { Button, IconButton } from '@/components/base/Button';
-import { X } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
-import { Colors } from '@/constants/themes';
 import { router } from 'expo-router';
 import Animated from 'react-native-reanimated';
 import MoodBadge, { MoodType } from '@/components/pages/journal/MoodBadge';
-import { BorderlessButton, Pressable } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native-gesture-handler';
 import Header from '@/components/base/Header';
 
 export default function JournalEntry() {

@@ -25,7 +25,7 @@ export default function Header({ title, headerRight, containerClassName = '', ti
         onPress={router.back}
       />
       <Text className={`ml-3 text-lg font-semibold text-text-full ${titleClassName}`}>{title}</Text>
-      {headerRight && <View className="ml-auto">{headerRight}</View>}
+      {headerRight ? <View className="ml-auto">{headerRight}</View> : <View className='ml-auto'></View>}
     </View>
   );
 };

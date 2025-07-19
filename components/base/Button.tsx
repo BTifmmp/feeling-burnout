@@ -14,7 +14,7 @@ import {
   BorderlessButtonProps,
 } from 'react-native-gesture-handler';
 
-type Variant = 'cardReversed' | 'highlight100' | 'highlight200' | 'highlight300' | 'blue' | 'ghost';
+type Variant = 'cardReversed' | 'highlight100' | 'highlight200' | 'highlight300' | 'blue' | 'ghost' | 'white';
 
 interface VariantConfig {
   backgroundColor: string;
@@ -32,6 +32,15 @@ export function useVariantConfig(variant: Variant): VariantConfig {
   const isDark = colorScheme === 'dark';
 
   const configs: Record<Variant, VariantConfig> = {
+    white: {
+      backgroundColor: '#ffffff',
+      textColor: '#000000',
+      rippleColor: '#0000001f',
+      activeOpacity: 0.1,
+      underlayColor: '#000000',
+      disabledBackgroundColor: '#555',
+      disabledTextColor: '#aaa',
+    },
     cardReversed: {
       backgroundColor: Colors[colorScheme].cardReversed,
       textColor: Colors[colorScheme].textPrimary,

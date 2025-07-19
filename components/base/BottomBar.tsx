@@ -20,10 +20,10 @@ const icons = {
     filled: require('@/assets/bottom-bar/relax-filled.png'),
     outline: require('@/assets/bottom-bar/relax-blank.png'),
   },
-  chat: {
-    filled: require('@/assets/bottom-bar/chat-filled.png'),
-    outline: require('@/assets/bottom-bar/chat-blank.png'),
-  },
+  // chat: {
+  //   filled: require('@/assets/bottom-bar/chat-filled.png'),
+  //   outline: require('@/assets/bottom-bar/chat-blank.png'),
+  // },
   profile: {
     filled: require('@/assets/bottom-bar/user-filled.png'),
     outline: require('@/assets/bottom-bar/user-blank.png'),

@@ -21,7 +21,7 @@ interface CardConfig {
 
 const cardConfig: Record<CardType, CardConfig> = {
   chat: {
-    title: 'Talk with AI companion',
+    title: 'Guided Meditation',
     image: require('@/assets/chat.png'),
     gradientDark: ['#4a639d', '#6a8ce0'], // balanced soft dark blues
     gradientLight: ['#8fc4f9', '#b1d6fb'], // gentle, slightly pastel blues

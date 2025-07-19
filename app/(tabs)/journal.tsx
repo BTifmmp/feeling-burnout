@@ -6,7 +6,7 @@ import { useColorScheme } from 'nativewind';
 import Animated from 'react-native-reanimated';
 import { Edit, Plus, Trash } from 'lucide-react-native';
 import { Colors } from '@/constants/themes';
-import { router, useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import MoodBadge, { moodStyleMap, MoodType } from '@/components/pages/journal/MoodBadge';
 import { Pressable } from 'react-native-gesture-handler';
 import { Button } from '@/components/base/Button';
@@ -49,8 +49,6 @@ export default function Journal() {
     : dummyEntries.filter((entry) => entry.flair === selectedBadge);
 
   const groupedEntries = groupByMonth(filteredEntries);
-
-  const router = useRouter();
 
   const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
 
