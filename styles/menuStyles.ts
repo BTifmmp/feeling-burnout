@@ -9,7 +9,7 @@ export const useMenuStyles = () => {
   return StyleSheet.create({
     optionsContainer: {
       paddingVertical: 6,
-      borderRadius: 8,
+      borderRadius: 12,
       backgroundColor: Colors[colorScheme].backgroundSecondary,
       elevation: 4,
       width: 160,

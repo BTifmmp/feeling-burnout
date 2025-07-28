@@ -22,6 +22,9 @@ export default function PreloadTailwind() {
       <View className="border-gray-highlight-100" />
       <View className="border-gray-highlight-200" />
       <View className="border-gray-highlight-300" />
+      <View className="bg-gray-highlight-100" />
+      <View className="bg-gray-highlight-200" />
+      <View className="bg-gray-highlight-300" />
       <View className="bg-text-secondary" />
       <View className="bg-text-primary" />
     </View>

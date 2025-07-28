@@ -6,8 +6,13 @@ import RelaxColorCard from '@/components/pages/relax/RelaxColorCard';
 import { Card } from '@/components/base/Card';
 import { Button } from '@/components/base/Button';
 import { router } from 'expo-router';
+import { ChevronDown, ChevronRight } from 'lucide-react-native';
+import { Colors } from '@/constants/themes';
+import { colorScheme, useColorScheme } from 'nativewind';
 
 export default function Relax() {
+  const { colorScheme = 'light' } = useColorScheme();
+
   return (
     <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
       <Animated.ScrollView contentContainerClassName="p-sides">
@@ -20,34 +25,32 @@ export default function Relax() {
         <Card className='justify-center mb-3 py-6 px-6'>
           <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
         </Card>
-        <Card className='justify-center mb-10 py-6 px-6'>
+        <Card className='justify-center mb-3 py-6 px-6'>
           <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
         </Card>
+        <View className='mb-10 flex-row items-center justify-center'>
+          <Button variant='ghost'>
+            <Text className='text-lg text-text-primary'>See more</Text>
+          </Button>
+        </View>
 
         <RelaxColorCard variant='breathing' />
         <Card className='justify-center mb-3 py-6 px-6'>
           <View className='flex-row items-center'><Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text></View>
         </Card>
-        <Card className='justify-center mb-3 py-6 px-6 '>
-          <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
-        </Card>
-        <Card className='justify-center mb-10 py-6 px-6'>
-          <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
-        </Card>
+        <Button onPress={() => { router.push('/breathing') }} variant='highlight100' style={{ marginBottom: 12, borderRadius: 24, paddingVertical: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View className='flex-row items-center'><Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text></View>
+        </Button>
 
-        <RelaxColorCard variant='break' />
         <Button onPress={() => { router.push('/meditation') }} variant='highlight100' style={{ marginBottom: 12, borderRadius: 24, paddingVertical: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
           <View className='flex-row items-center'><Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text></View>
         </Button>
-        <Card className='justify-center mb-3 py-6 px-6'>
-          <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
-        </Card>
-        <Card className='justify-center mb-3 py-6 px-6'>
-          <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
-        </Card>
-        <Card className='justify-center mb-10 py-6 px-6'>
-          <Text className='text-lg text-text-primary font-semibold'>Relaxation Techniques</Text>
-        </Card>
+        <View className='mb-8 flex-row items-center justify-center'>
+          <Button variant='ghost'>
+            <Text className='text-lg text-text-primary'>See more</Text>
+          </Button>
+        </View>
+
       </Animated.ScrollView>
     </SafeAreaView>
   );

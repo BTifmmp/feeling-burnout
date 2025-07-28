@@ -17,7 +17,7 @@ export default function Header({ title, headerRight, containerClassName = '', ti
   const { colorScheme = 'light' } = useColorScheme();
 
   return (
-    <View className={`h-[70px] flex-row items-center justify-between px-sides ${containerClassName}`}>
+    <View className={`h-[65px] flex-row items-center justify-between px-sides ${containerClassName}`}>
       <IconButton
         variant='ghost'
         style={{ padding: 10, marginLeft: -10 }}

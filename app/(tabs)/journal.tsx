@@ -1,4 +1,4 @@
-import { View, Text, Alert } from 'react-native';
+import { View, Text } from 'react-native';
 import React, { useState } from 'react';
 import SafeAreaView from '@/components/base/MySafeArea';
 import { format, parseISO } from 'date-fns';
@@ -13,26 +13,18 @@ import { Button } from '@/components/base/Button';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { useMenuStyles } from '@/styles/menuStyles';
 import { useJournalEditStore } from '@/store/journalEditStore';
+import { Database } from '@/utils/database.types';
+import { journals$ } from '@/utils/SupaLegend';
+import { deleteJournal } from '@/utils/queries';
+import { observer } from '@legendapp/state/react';
+import { FlashList } from '@shopify/flash-list';
 
-const dummyEntries = [
-  { id: 1, date: '2025-07-15', content: 'Went on a long walk and cleared my head.', flair: 'positive' },
-  { id: 2, date: '2025-07-12', content: 'Started reading a new book about design thinking.', flair: 'positive' },
-  { id: 3, date: '2025-07-03', content: 'Felt a bit overwhelmed, so I took a day off screens.', flair: 'negative' },
-  { id: 4, date: '2025-06-28', content: 'Brainstormed ideas for the new project. Excited!', flair: 'positive' },
-  { id: 5, date: '2025-06-21', content: 'Watched the sunset and felt really calm.', flair: 'neutral' },
-  { id: 6, date: '2025-06-17', content: 'Had a tough conversation, but it went well.', flair: 'positive' },
-  { id: 7, date: '2025-06-05', content: 'Sprinted through work. Felt productive.', flair: 'positive' },
-  { id: 8, date: '2025-05-29', content: 'Visited my favorite café after weeks.', flair: 'neutral' },
-  { id: 9, date: '2025-05-14', content: 'Practiced gratitude. Listened to birds in the morning.', flair: 'positive' },
-  { id: 10, date: '2025-05-01', content: 'New month, new intentions. Writing goals down.', flair: 'neutral' },
-];
+type JournalRow = Database['public']['Tables']['journals']['Row'];
 
-
-const groupByMonth = (entries: typeof dummyEntries) => {
-  const grouped: { [key: string]: typeof dummyEntries } = {};
+const groupByMonth = (entries: JournalRow[]) => {
+  const grouped: { [key: string]: JournalRow[] } = {};
   entries.forEach((entry) => {
-    const date = parseISO(entry.date);
-    const month = format(date, 'MMMM yyyy');
+    const month = format(entry.at_local_time_added, 'MMMM yyyy');
     if (!grouped[month]) grouped[month] = [];
     grouped[month].push(entry);
   });
@@ -40,78 +32,100 @@ const groupByMonth = (entries: typeof dummyEntries) => {
 };
 
 
-export default function Journal() {
+const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
+
+
+const Journal = observer(() => {
   const { colorScheme = 'light' } = useColorScheme();
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
 
+  const entries = Object.values(journals$.get() || {});
+
+  const sortedEntries = entries.sort((a, b) => {
+    return b.at_local_time_added.getTime() - a.at_local_time_added.getTime()
+  });
+
+
   const filteredEntries = selectedBadge === 'all'
-    ? dummyEntries
-    : dummyEntries.filter((entry) => entry.flair === selectedBadge);
+    ? sortedEntries
+    : sortedEntries.filter((entry) => entry.badge === selectedBadge);
 
   const groupedEntries = groupByMonth(filteredEntries);
 
-  const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
-      <Animated.ScrollView contentContainerClassName="p-sides">
-        <Text className="text-4xl text-text-primary font-bold mb-2 mt-1">Journal</Text>
-
-        <Button variant='highlight100'
-          style={{ marginTop: 12, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between' }}
-          onPress={() => router.push('/journal-entry')}>
-          <Text className="ml-2 text-lg text-text-primary font-medium">Add Entry</Text>
-          <Plus color={Colors[colorScheme].textPrimary} />
-        </Button>
-
-        <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6">
-          <View className='flex-row gap-2.5'>
-            {badgeOptions.map((badge) => {
-              const isSelected = badge === selectedBadge;
-              return (
-                <Pressable
-                  key={badge}
-                  onPress={() => setSelectedBadge(badge as any)}>
-                  <MoodBadge mood={badge} isSelected={isSelected} containerClassName='px-4 py-2' />
-                </Pressable>
-              );
-            })}
-          </View>
-        </Animated.ScrollView>
-
-        {Object.entries(groupedEntries).map(([month, entries]) => (
+      <FlashList
+        data={Object.entries(groupedEntries)}
+        keyExtractor={([month]) => month}
+        estimatedItemSize={200}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
+        renderItem={({ item: [month, entries] }) => (
           <View key={month}>
             <Text className="text-xl text-text-primary font-medium mt-8 mb-2">{month}</Text>
-            {entries.map((entry, index) => {
-              const date = parseISO(entry.date);
-
-              return (
-                <View key={entry.id}>
-                  <JournalEntry
-                    key={entry.id}
-                    date={date}
-                    id={entry.id}
-                    content={entry.content}
-                    badge={entry.flair as Exclude<MoodType, 'all'>}
-                    colorScheme={colorScheme}
-                  />
-                  {index !== entries.length - 1 && <View className='border-b-hairline border-gray-highlight-300' />}
-                </View>
-              );
-            })}
+            {entries.map((entry, index) => (
+              <View key={entry.id}>
+                <JournalEntry
+                  date={entry.at_local_time_added}
+                  id={entry.id}
+                  content={entry.entry}
+                  badge={entry.badge as Exclude<MoodType, 'all'>}
+                  colorScheme={colorScheme}
+                />
+                {index !== entries.length - 1 && (
+                  <View className="border-b-hairline border-gray-highlight-300" />
+                )}
+              </View>
+            ))}
           </View>
-        ))}
+        )}
+        ListHeaderComponent={
+          <>
+            <Text className="text-4xl text-text-primary font-bold mb-2 mt-1">Journal</Text>
+            <Button
+              variant="highlight100"
+              style={{
+                marginTop: 12,
+                paddingVertical: 12,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+              onPress={() => router.push('/journal-entry')}
+            >
+              <Text className="ml-2 text-lg text-text-primary font-medium">Add Entry</Text>
+              <Plus color={Colors[colorScheme].textPrimary} />
+            </Button>
 
-      </Animated.ScrollView>
+            <Animated.ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-6"
+            >
+              <View className="flex-row gap-2.5">
+                {badgeOptions.map((badge) => {
+                  const isSelected = badge === selectedBadge;
+                  return (
+                    <Pressable key={badge} onPress={() => setSelectedBadge(badge as any)}>
+                      <MoodBadge mood={badge} isSelected={isSelected} containerClassName="px-4 py-2" />
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </Animated.ScrollView>
+          </>
+        }
+      />
     </SafeAreaView>
   );
-}
+})
+
+export default Journal;
+
 
 /////////////////////////////////////
 // JournalEntry component
 /////////////////////////////////////
 interface JournalEntryProps {
-  id: number;
+  id: string;
   date: Date;
   content: string;
   badge: Exclude<MoodType, 'all'>;
@@ -121,17 +135,17 @@ interface JournalEntryProps {
 
 function JournalEntry({ date, id, content, badge, colorScheme }: JournalEntryProps) {
   const flairClass = moodStyleMap[badge as Exclude<MoodType, 'all'>] || 'text-primary';
-  const { editingEntry, setEditingEntry } = useJournalEditStore();
+  const { setEditingEntry } = useJournalEditStore();
   const menuRef = React.useRef<Menu>(null);
   const menuStyles = useMenuStyles();
 
   return (
     <View>
-      <View className='absolute left-1/4 top-3 z-10'>
+      <View className='absolute left-3 top-3 z-10'>
         <Menu ref={menuRef}>
           <MenuTrigger style={{ marginLeft: 10 }} />
           <MenuOptions customStyles={{ optionsContainer: menuStyles.optionsContainer }}>
-            <MenuOption onSelect={() => Alert.alert('Delete Chat')}>
+            <MenuOption onSelect={() => deleteJournal(id)}>
               <View style={menuStyles.optionContainer}>
                 <Trash size={18} color={Colors[colorScheme].textPrimary} />
                 <Text style={menuStyles.optionText}>Delete Entry</Text>
@@ -149,7 +163,7 @@ function JournalEntry({ date, id, content, badge, colorScheme }: JournalEntryPro
       <Pressable onLongPress={() => { menuRef.current?.open() }}>
         <View className="py-3">
           <Text className="text-base font-medium text-text-primary">
-            {format(date, 'EEE d')}
+            {format(date.toDateString(), 'EEE d')}
           </Text>
           {
             colorScheme === 'dark'

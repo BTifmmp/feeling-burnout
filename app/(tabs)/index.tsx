@@ -7,49 +7,19 @@ import { useColorScheme } from 'nativewind'
 import { Colors } from '@/constants/themes'
 import JournalEntryBox from '@/components/pages/main/JournalEntryBox'
 import Animated from 'react-native-reanimated'
-import MoodDaysBar from '@/components/pages/main/MoodDaysBar'
 import { TopCardTitle } from '@/components/base/Card'
 import InfoCard from '@/components/pages/main/ColorCardButton'
 import MoodGrid from '@/components/pages/main/MoodGrid'
-import ArticlesCard from '@/components/pages/main/ArticlesCard'
-import { Button } from '@/components/base/Button'
-import { ChevronRight } from 'lucide-react-native'
+import GoalBoard from '@/components/pages/main/GoalBoard'
+import { Button, IconButton } from '@/components/base/Button'
+import { Calendar, ChevronRight } from 'lucide-react-native'
 import { StyleSheet } from 'react-native';
 import { router } from 'expo-router'
+import { addJournal } from '@/utils/queries'
+import EasyAccessMoods from '@/components/pages/main/EasyAccessMoods'
 
 export default function HomeScreen() {
   const { colorScheme = "light" } = useColorScheme();
-
-  const exampleMoodData = {
-    '2025-07-01': 3,
-    '2025-07-02': 1,
-    '2025-07-03': 4,
-    '2025-07-04': 2,
-    '2025-07-05': 3,
-    '2025-07-06': 1,
-    '2025-07-07': 4,
-    '2025-07-08': 0,
-    '2025-07-09': 2,
-    '2025-07-10': 3,
-    '2025-07-11': 1,
-    '2025-07-13': 2,
-    '2025-07-15': 3,
-    '2025-07-16': 4,
-    '2025-07-18': 0,
-    '2025-07-19': 2,
-    '2025-07-20': 3,
-    '2025-07-21': 1,
-    '2025-07-23': 4,
-    '2025-07-24': 3,
-    '2025-07-25': 2,
-    '2025-07-26': 1,
-    '2025-07-27': 3,
-    '2025-07-28': 0,
-    '2025-07-29': 2,
-    '2025-07-30': 4,
-    '2025-07-31': 3,
-  };
-
 
   return (
     <View className='flex-1'>
@@ -58,21 +28,17 @@ export default function HomeScreen() {
         <Animated.ScrollView className='flex-1 bg-card-reversed'>
           <View className='bg-background-reversed'>
             <BottomWaveCard>
-              <Text className='text-4xl font-extrabold text-text-primary mt-1'>
-                Hi user
-              </Text>
+              <View className='flex-row justify-between items-start'>
+                <Text className='text-4xl font-extrabold text-text-primary mt-1'>
+                  Hi user
+                </Text>
+                <IconButton onPress={() => { router.push('mood-calendar') }} icon={<Calendar size={22} color={Colors[colorScheme].textPrimary} />} />
+
+              </View>
               <Text className='text-xl text-text-secondary mt-2'>
                 How are you feeling today?
               </Text>
-              <MoodDaysBar moodData={exampleMoodData} />
-              <Text className='text-3xl text-text-primary mt-6'>
-                You logged your mood as <Text className='mt font-extrabold'>Happy</Text>.
-              </Text>
-              {/* <View className='mt-10 justify-center items-center'>
-                <TouchableOpacity className='bg-gray-highlight-100 rounded-full py-2 px-4'>
-                  <Text className='text-text-primary text-center'>Change Log</Text>
-                </TouchableOpacity>
-              </View> */}
+              <EasyAccessMoods />
             </BottomWaveCard>
 
             <View className='px-sides mt-10 mb-8'>
@@ -81,9 +47,18 @@ export default function HomeScreen() {
                 <InfoCard type='breathing' containerClass='flex-1' />
               </View>
 
+              <TopCardTitle title='Goals & Bounderies' className='mt-10' />
+              <GoalBoard className='bg-card-reversed' />
+
               <TopCardTitle title='Mood Overview' className='mt-10' />
-              <MoodGrid moodData={exampleMoodData} className='bg-card-reversed' />
-              <Button variant='cardReversed' style={styles.buttonRow} onPress={() => { router.navigate('/mood-calendar') }} >
+              <MoodGrid className='bg-card-reversed' />
+              <Button variant='cardReversed' style={styles.buttonRow} onPress={() => {
+                // router.navigate('/mood-calendar');
+                addJournal(
+                  'Today was a good day, I felt productive and happy.', 'positive');
+                // syncState(journals$).sync();
+                // setMoodModalVisible(true);
+              }} >
                 <Text className='text-text-primary text-base font-semibold'>Mood Calendar</Text>
                 <ChevronRight color={Colors[colorScheme].textPrimary} size={22} />
               </Button>
@@ -95,9 +70,6 @@ export default function HomeScreen() {
                 <Text className='text-text-primary text-base font-semibold'>Open Journal</Text>
                 <ChevronRight color={Colors[colorScheme].textPrimary} size={22} />
               </Button>
-
-              <TopCardTitle title='Discover More' className='mt-10' />
-              <ArticlesCard className='bg-card-reversed' />
             </View>
 
           </View>

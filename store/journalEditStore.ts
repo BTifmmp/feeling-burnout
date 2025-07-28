@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface JournalEntry {
-  id: number;
+  id: string;
   date: Date;
   content: string;
   badge: 'positive' | 'neutral' | 'negative';

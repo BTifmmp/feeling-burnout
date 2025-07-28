@@ -48,9 +48,9 @@ export default function RelaxColorCard({ variant }: RelaxColorCardProps) {
         <View className="flex-row items-center h-full">
           <View className="flex-1 h-full p-5">
             <Text className="text-2xl font-bold mb-1 text-text-primary">{title}</Text>
-            <Text className="text-base text-text-secondary">{description}</Text>
+            <Text className="text-base text-text-primary">{description}</Text>
           </View>
-          <Image source={image} className="w-2/5 h-full" resizeMode="cover" />
+          {/* <Image source={image} className="w-2/5 h-full" resizeMode="cover" /> */}
         </View>
       </LinearGradient>
     </View>
