@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import Animated, { useAnimatedRef, scrollTo, runOnUI } from 'react-native-reanimated';
+import Animated, { useAnimatedRef, scrollTo, runOnUI, FadeIn } from 'react-native-reanimated';
 import {
   format,
   eachDayOfInterval,
@@ -11,6 +11,11 @@ import {
 import { MoodRow } from '@/utils/types';
 import { Button } from '@/components/base/Button';
 import { useMoodStore } from '@/store/moodStore';
+import { Skeleton } from 'moti/skeleton'
+import { MotiView } from 'moti';
+import { useColorScheme } from 'nativewind';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { getMotiColors } from '@/constants/themes';
 
 interface Props {
   moodData?: MoodRow[];
@@ -70,6 +75,7 @@ export function DayCell({ mood, date }: DayCellProps) {
 }
 
 export default function MoodDaysBar({ moodData }: Props) {
+  const [isReady, setIsReady] = useState(false);
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
   const today = new Date()
 
@@ -102,11 +108,17 @@ export default function MoodDaysBar({ moodData }: Props) {
   });
 
   useEffect(() => {
-    runOnUI(() => {
-      const offset = todayIndex * CELL_WIDTH - 8;
-      scrollTo(animatedRef, offset, 0, false);
-    })();
+    requestAnimationFrame(() => {
+      runOnUI(() => {
+        const offset = todayIndex * CELL_WIDTH - 8;
+        scrollTo(animatedRef, offset, 0, false);
+      })();
+    });
   }, []);
+
+
+  // if (!isReady)
+  //   return <MoodDaysBarSkeleton />;
 
   return (
     <View className="-mx-card mt-4">
@@ -119,6 +131,34 @@ export default function MoodDaysBar({ moodData }: Props) {
       >
         <View className="flex-row">{daysArray}</View>
       </Animated.ScrollView>
+    </View>
+  );
+}
+
+
+function MoodDaysBarSkeleton() {
+  const { colorScheme = 'light' } = useColorScheme();
+
+  const skeletonDays = Array.from({ length: 7 }); // one week of placeholders
+
+  return (
+    <View className="-mx-card mt-4 py-4 px-1">
+      <MotiView
+        className='flex-row gap-2 justify-between'
+        transition={{ type: 'timing' }}
+        animate={{ backgroundColor: Colors[colorScheme].cardReversed }}
+      >
+        {skeletonDays.map((_, index) => (
+          <Skeleton
+            colors={getMotiColors(colorScheme)}
+            key={index}
+            colorMode={colorScheme}
+            width={54}
+            height={80}
+            radius={12}
+          />
+        ))}
+      </MotiView>
     </View>
   );
 }

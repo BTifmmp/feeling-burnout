@@ -16,16 +16,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import { moods$ } from '@/utils/SupaLegend';
-import MoodModal from '@/components/modals/MoodDetailsModal';
+import MoodDetailsModal from '@/components/modals/MoodDetailsModal';
 import MoodSelectModal from '@/components/modals/MoodSelectModal';
 import { useMoodStore } from '@/store/moodStore';
 import { MoodRow } from '@/utils/types';
 import { observer } from '@legendapp/state/react';
+import MoodModalCombined from '@/components/modals/MoodModalCombined';
 
 const MoodGrid = observer(({ className }: { className?: string }) => {
   const { colorScheme = 'light' } = useColorScheme();
 
-  const [isMoodSelectModalVisible, setMoodSelectModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState<"moodDetails" | "moodSelect">("moodDetails");
   const [isMoodModalVisible, setMoodModalVisible] = useState(false);
 
   const { setModalDate, setModalMood } = useMoodStore();
@@ -58,18 +59,14 @@ const MoodGrid = observer(({ className }: { className?: string }) => {
 
   return (
     <Card className={className}>
-      <MoodModal
-        visible={isMoodModalVisible}
+
+      <MoodModalCombined
         onClose={() => setMoodModalVisible(false)}
+        isVisible={isMoodModalVisible}
+        content={modalContent}
         onChangeMood={() => {
-          setMoodModalVisible(false);
-          setMoodSelectModalVisible(true);
-          setModalMood('');
+          setModalContent('moodSelect');
         }}
-      />
-      <MoodSelectModal
-        visible={isMoodSelectModalVisible}
-        onClose={() => setMoodSelectModalVisible(false)}
       />
 
       <View className={`flex-row items-center justify-between ${className}`}>
@@ -134,6 +131,7 @@ const MoodGrid = observer(({ className }: { className?: string }) => {
                     onPress={() => {
                       setModalDate(date);
                       setModalMood(moodData[dateKey]?.id ?? '');
+                      setModalContent('moodDetails');
                       setMoodModalVisible(true);
                     }}
                   >

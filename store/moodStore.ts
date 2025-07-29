@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+
 interface MoodState {
   selectedDate: Date;
   selectedMood: string | null; // mood for the selectedDate
@@ -13,16 +14,17 @@ interface MoodState {
   setModalMood: (id: string) => void;
 }
 
-export const useMoodStore = create<MoodState>((set) => ({
-  selectedDate: new Date(), // default to today
+export const useMoodStore = create<MoodState>((set) =>  ({
+  selectedDate: new Date(0),
   selectedMood: null,
 
   setSelectedDate: (date) => set({ selectedDate: date }),
   setSelectedMood: (mood) => set({ selectedMood: mood }),
 
-  modalDate: new Date(), // default to today
+  modalDate: new Date(0),
   modalMood: null,
 
   setModalDate: (date) => set({ modalDate: date }),
   setModalMood: (mood) => set({ modalMood: mood }),
 }));
+

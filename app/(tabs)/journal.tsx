@@ -58,7 +58,7 @@ const Journal = observer(() => {
         data={Object.entries(groupedEntries)}
         keyExtractor={([month]) => month}
         estimatedItemSize={200}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 80 }}
         renderItem={({ item: [month, entries] }) => (
           <View key={month}>
             <Text className="text-xl text-text-primary font-medium mt-8 mb-2">{month}</Text>
@@ -78,9 +78,10 @@ const Journal = observer(() => {
             ))}
           </View>
         )}
+        ListEmptyComponent={<View><Text className="text-2xl  text-text-primary mt-8">No journal entries</Text></View>}
         ListHeaderComponent={
           <>
-            <Text className="text-4xl text-text-primary font-bold mb-2 mt-1">Journal</Text>
+            <Text className="text-4xl text-text-primary font-bold mb-2 mt-1 pt-sides">Journal</Text>
             <Button
               variant="highlight100"
               style={{
@@ -98,7 +99,7 @@ const Journal = observer(() => {
             <Animated.ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="mt-6"
+              className="mt-5"
             >
               <View className="flex-row gap-2.5">
                 {badgeOptions.map((badge) => {

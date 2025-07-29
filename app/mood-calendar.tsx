@@ -144,7 +144,6 @@ export default function MoodCalendar() {
   }));
 
 
-
   // Memoized key extractor for list items
   const keyExtractor = useCallback((item: Date) => format(item, 'yyyy-MM'), []);
 
@@ -204,7 +203,6 @@ export default function MoodCalendar() {
       end: addDays(range.start, -1),
     });
 
-    const currentOffset = scrollOffsetRef.current;
 
     setMonths((prevMonths) => {
       const merged = mergeUniqueMonths(newMonths, prevMonths);
@@ -215,6 +213,7 @@ export default function MoodCalendar() {
     // Adjust scroll position after prepending items to prevent visual jump
     requestAnimationFrame(() => {
       if (listRef.current) {
+        const currentOffset = scrollOffsetRef.current;
         listRef.current.scrollToOffset({
           offset: currentOffset + (newMonths.length * TOTAL_ITEM_HEIGHT),
           animated: false,
@@ -280,6 +279,7 @@ export default function MoodCalendar() {
         contentContainerStyle={{ paddingHorizontal: 16 }}
         ItemSeparatorComponent={() => <View style={{ height: ITEM_SEPARATOR_HEIGHT }} />}
         onEndReachedThreshold={0.3}
+        decelerationRate={'fast'}
         ListFooterComponent={footerHeader}
         ListHeaderComponent={footerHeader}
         onScroll={handleScroll}

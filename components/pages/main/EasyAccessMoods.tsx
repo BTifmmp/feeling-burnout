@@ -1,21 +1,20 @@
 import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import React, { use, useEffect, useLayoutEffect, useState } from 'react';
 import MoodDaysBar from './MoodDaysBar';
 import { moods$ } from '@/utils/SupaLegend';
-import { format, isToday } from 'date-fns';
+import { format, isSameDay, isToday, set } from 'date-fns';
 import { useMoodStore } from '@/store/moodStore';
 import { MoodsMap } from '@/constants/maps';
 import { Button } from '@/components/base/Button';
-import MoodSelectModal from '@/components/modals/MoodSelectModal';
 import { observer } from '@legendapp/state/react';
+import MoodModalCombined from '@/components/modals/MoodModalCombined';
 
 const EasyAccessMoods = observer(() => {
   const [isMoodSelectModalVisible, setMoodSelectModalVisible] = useState(false);
 
-  const { selectedDate, selectedMood, setModalDate, setModalMood, setSelectedMood } = useMoodStore();
+  const { selectedDate, selectedMood, setModalDate, setModalMood } = useMoodStore();
 
   const moodData = Object.values(moods$.get() || {});
-
   const selectedMoodData = selectedMood ? moods$[selectedMood]?.get() : null;
 
   const isSelectedToday = isToday(new Date(selectedDate));
@@ -23,15 +22,24 @@ const EasyAccessMoods = observer(() => {
     ? 'Today'
     : format(new Date(selectedDate), 'd MMMM');
 
+  useEffect(() => {
+    const moodValues = Object.values(moods$.get());
+    for (const mood of moodValues) {
+      if (isSameDay(mood.at_local_time_added, new Date())) {
+        useMoodStore.setState({
+          selectedDate: new Date(),
+          selectedMood: mood.id ?? null,
+          modalDate: new Date(),
+          modalMood: mood.id ?? null,
+        });
+        break; // Stop after finding the first match
+      }
+    }
+  }, [])
+
   return (
-    <View>
-      <MoodSelectModal
-        visible={isMoodSelectModalVisible}
-        onClose={() => setMoodSelectModalVisible(false)}
-        onSelect={(moodId) => {
-          setSelectedMood(moodId);
-        }}
-      />
+    <View style={{ opacity: Number(selectedDate.getTime() != 0) }}>
+      <MoodModalCombined isVisible={isMoodSelectModalVisible} content='moodSelect' onClose={() => { setMoodSelectModalVisible(false) }} />
 
       <MoodDaysBar moodData={moodData} />
 

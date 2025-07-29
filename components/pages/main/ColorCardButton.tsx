@@ -51,7 +51,7 @@ export default function InfoCard({ type, containerClass }: InfoCardProps) {
 
   return (
     <View className={containerClass}>
-      <View className={`rounded-3xl relative overflow-hidden bg-red-400`}>
+      <View className='rounded-3xl relative overflow-hidden'>
 
         {/* Gradient background */}
         <LinearGradient
@@ -77,7 +77,7 @@ export default function InfoCard({ type, containerClass }: InfoCardProps) {
         </View>
 
         {/* Text section */}
-        <View className="flex-1 items-start justify-center p-5">
+        <View className="items-start justify-center p-5">
           <Text className="text-text-full text-xl font-semibold">
             {title}
           </Text>
