@@ -10,8 +10,6 @@ import { Colors } from '@/constants/themes';
 import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SnackbarProvider } from '@/components/base/Snackbar';
-import { journals$, moods$ } from '@/utils/SupaLegend';
-import { View } from 'react-native';
 import { observer } from '@legendapp/state/react';
 
 
@@ -24,10 +22,6 @@ const ObservedLayout = observer(() => {
   SystemUI.setBackgroundColorAsync(Colors[colorScheme].background);
 
   const invertedColorScheme = colorScheme === 'light' ? 'dark' : 'light';
-
-  if (moods$.get() == undefined || journals$.get() == undefined) {
-    return (<View style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}></View>)
-  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}>

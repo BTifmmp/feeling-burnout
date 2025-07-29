@@ -15,13 +15,13 @@ interface MoodState {
 }
 
 export const useMoodStore = create<MoodState>((set) =>  ({
-  selectedDate: new Date(0),
+  selectedDate: new Date(),
   selectedMood: null,
 
   setSelectedDate: (date) => set({ selectedDate: date }),
   setSelectedMood: (mood) => set({ selectedMood: mood }),
 
-  modalDate: new Date(0),
+  modalDate: new Date(),
   modalMood: null,
 
   setModalDate: (date) => set({ modalDate: date }),

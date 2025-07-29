@@ -8,11 +8,14 @@ import { MoodsMap } from '@/constants/maps';
 import { Button } from '@/components/base/Button';
 import { observer } from '@legendapp/state/react';
 import MoodModalCombined from '@/components/modals/MoodModalCombined';
+import { SkeletonView } from '@/components/base/Skeleton';
 
 const EasyAccessMoods = observer(() => {
   const [isMoodSelectModalVisible, setMoodSelectModalVisible] = useState(false);
 
-  const { selectedDate, selectedMood, setModalDate, setModalMood } = useMoodStore();
+  const { selectedDate, selectedMood, setModalDate, setModalMood, setSelectedDate, setSelectedMood } = useMoodStore();
+
+  const [moodsLoaded, setMoodsLoaded] = useState(false);
 
   const moodData = Object.values(moods$.get() || {});
   const selectedMoodData = selectedMood ? moods$[selectedMood]?.get() : null;
@@ -23,22 +26,23 @@ const EasyAccessMoods = observer(() => {
     : format(new Date(selectedDate), 'd MMMM');
 
   useEffect(() => {
-    const moodValues = Object.values(moods$.get());
-    for (const mood of moodValues) {
-      if (isSameDay(mood.at_local_time_added, new Date())) {
-        useMoodStore.setState({
-          selectedDate: new Date(),
-          selectedMood: mood.id ?? null,
-          modalDate: new Date(),
-          modalMood: mood.id ?? null,
-        });
-        break; // Stop after finding the first match
+    if (moods$.get() != undefined) {
+      const moods = Object.values(moods$.get());
+      for (const mood of moods) {
+        if (isSameDay(new Date(mood.at_local_time_added), new Date())) {
+          setSelectedMood(mood.id);
+          setModalMood(mood.id);
+          setMoodsLoaded(true);
+          setModalDate(new Date());
+          setModalDate(new Date());
+          break;
+        }
       }
     }
-  }, [])
+  }, [moods$.get()]);
 
   return (
-    <View style={{ opacity: Number(selectedDate.getTime() != 0) }}>
+    <View style={{ opacity: moodsLoaded ? 1 : 0 }}>
       <MoodModalCombined isVisible={isMoodSelectModalVisible} content='moodSelect' onClose={() => { setMoodSelectModalVisible(false) }} />
 
       <MoodDaysBar moodData={moodData} />
