@@ -1,5 +1,5 @@
-import React, { useCallback, memo, useState, useRef, useEffect, useMemo, use } from 'react';
-import { View, Text, FlatList, ListRenderItem, Pressable } from 'react-native';
+import React, { useCallback, memo, useState, useRef, useEffect, useMemo } from 'react';
+import { View, Text, FlatList, ListRenderItem } from 'react-native';
 import {
   eachMonthOfInterval,
   startOfMonth,
@@ -11,16 +11,12 @@ import {
   isSameDay,
   format,
   addMonths, // Import addMonths
-  subMonths,
-  set, // Import subMonths
+  subMonths, // Import subMonths
 } from 'date-fns';
 import SafeAreaView from '@/components/base/MySafeArea';
 import Header from '@/components/base/Header';
 import { MoodRow } from '@/utils/types';
 import { moods$ } from '@/utils/SupaLegend';
-import MoodModalCombined from '@/components/modals/MoodModalCombined';
-import { useMoodStore } from '@/store/moodStore';
-import { observer } from '@legendapp/state/react';
 
 // --- Constants for Configuration ---
 const MONTH_ITEM_HEIGHT = 378; // Height of the MonthItem component itself
@@ -60,13 +56,10 @@ function mergeUniqueMonths(newMonths: Date[], existingMonths: Date[]): Date[] {
 interface MonthItemProps {
   monthDate: Date;
   today: Date;
-  moodsByDate: Map<string, MoodRow[]> | undefined; // Map of moods by date
-  onPress?: () => void; // Optional onPress handler
+  moodsByDate: Map<string, MoodRow[]>;
 }
 
-const MonthItem = memo(({ monthDate, today, moodsByDate, onPress }: MonthItemProps) => {
-  const { setModalDate, setModalMood } = useMoodStore();
-
+const MonthItem = memo(({ monthDate, today, moodsByDate }: MonthItemProps) => {
   const days = generateMonthMatrix(monthDate);
   const label = format(monthDate, 'MMMM yyyy');
 
@@ -97,7 +90,7 @@ const MonthItem = memo(({ monthDate, today, moodsByDate, onPress }: MonthItemPro
               {rowDays.map((day, i) => {
                 const isInMonth = isSameMonth(day, monthDate);
                 const isToday = isSameDay(day, today);
-                const moodValue = moodsByDate?.get(format(day, 'yyyy-MM-dd'));
+                const moodValue = moodsByDate.get(format(day, 'yyyy-MM-dd'));
                 const bg = moodValue != undefined ? 'bg-mood-colors-' + moodValue[0].mood_value : ''
 
 
@@ -111,14 +104,13 @@ const MonthItem = memo(({ monthDate, today, moodsByDate, onPress }: MonthItemPro
                   );
                 else
                   return (
-                    <Pressable
-                      onPress={() => { onPress && onPress(); setModalDate(day); setModalMood(moodValue ? moodValue[0].id : ''); }}
+                    <View
                       key={i}
                       className={`flex-1 rounded-full h-[40px] items-center justify-center my-1 ${isToday ? 'bg-gray-highlight-200' : 'bg-transparent'}`}
                     >
                       <Text className="text-text-secondary text-center">{getDate(day)}</Text>
                       <View className={`absolute top-2 right-2 h-[8px] w-[8px] rounded-full ${bg}`} />
-                    </Pressable>
+                    </View>
                   );
               })}
             </View>
@@ -130,11 +122,7 @@ const MonthItem = memo(({ monthDate, today, moodsByDate, onPress }: MonthItemPro
 });
 
 // --- Main Calendar Component ---
-const MoodCalendar = observer(() => {
-  const [modalContent, setModalContent] = useState<"moodDetails" | "moodSelect">("moodDetails");
-  const [isMoodModalVisible, setMoodModalVisible] = useState(false);
-
-
+export default function MoodCalendar() {
   const listRef = useRef<FlatList<Date>>(null);
   const scrollOffsetRef = useRef(0);
   const lastLoadBeforeTimeRef = useRef(0);
@@ -159,28 +147,22 @@ const MoodCalendar = observer(() => {
   // Memoized key extractor for list items
   const keyExtractor = useCallback((item: Date) => format(item, 'yyyy-MM'), []);
 
-  const loadFresh = useCallback(() => {
+  const moodsByDate = useMemo(() => {
     const map = new Map<string, MoodRow[]>();
-    Object.values(moods$.get()).forEach(mood => {
+
+    Object.values(moods$.get()).forEach(mood => { // If allMoods is an object {id: MoodRow}, use Object.values
       const dateKey = format(mood.at_local_time_added, 'yyyy-MM-dd');
       if (!map.has(dateKey)) {
         map.set(dateKey, []);
       }
       map.get(dateKey)?.push(mood);
-      setMoodsByDate(map);
     });
-  }, [])
-
-  const [moodsByDate, setMoodsByDate] = useState<Map<string, MoodRow[]>>();
-  useEffect(() => {
-    loadFresh();
-    moods$.onChange(loadFresh)
-  }, [])
+    return map;
+  }, []); // Dependency should be your raw moods data
 
   // Pass `moodsByDate` down to renderItem
   const renderItem: ListRenderItem<Date> = useCallback(
-    ({ item }) => <MonthItem monthDate={item} today={today} moodsByDate={moodsByDate}
-      onPress={() => { setMoodModalVisible(true); }} />,
+    ({ item }) => <MonthItem monthDate={item} today={today} moodsByDate={moodsByDate} />,
     [today, moodsByDate] // moodsByDate as a dependency here
   );
 
@@ -284,46 +266,29 @@ const MoodCalendar = observer(() => {
     }
   }, []);
 
-
   return (
-    <View className='flex-1'>
-      <MoodModalCombined
-        onClose={() => { setMoodModalVisible(false); setModalContent('moodDetails') }}
-        isVisible={isMoodModalVisible}
-        content={modalContent}
-        onChangeMood={() => {
-          setModalContent('moodSelect');
-        }}
+    <SafeAreaView className="flex-1 bg-background" edges={{ top: true, bottom: true }}>
+      <Header title="" />
+      <FlatList
+        ref={listRef}
+        data={months}
+        // initialScrollIndex={months.findIndex((m) => format(m, 'yyyy-MM') === todayKey)}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        ItemSeparatorComponent={() => <View style={{ height: ITEM_SEPARATOR_HEIGHT }} />}
+        onEndReachedThreshold={0.3}
+        decelerationRate={'fast'}
+        ListFooterComponent={footerHeader}
+        ListHeaderComponent={footerHeader}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        onEndReached={loadMoreAfter}
+        getItemLayout={getItemLayout}
+        windowSize={11} // Adjust based on your screen size and desired buffer
+        maxToRenderPerBatch={6}
       />
-      <SafeAreaView className="flex-1 bg-background" edges={{ top: true, bottom: true }}>
-        <Header title="" />
-        <FlatList
-          ref={listRef}
-          data={months}
-          // initialScrollIndex={months.findIndex((m) => format(m, 'yyyy-MM') === todayKey)}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
-          ItemSeparatorComponent={() => <View style={{ height: ITEM_SEPARATOR_HEIGHT }} />}
-          onEndReachedThreshold={0.3}
-          decelerationRate={'fast'}
-          ListFooterComponent={footerHeader}
-          ListHeaderComponent={footerHeader}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          onEndReached={loadMoreAfter}
-          getItemLayout={getItemLayout}
-          windowSize={11} // Adjust based on your screen size and desired buffer
-          maxToRenderPerBatch={6}
-        />
-      </SafeAreaView>
-    </View>
-  );
-})
-
-export default function MoodCalendarWrap() {
-  return (
-    <MoodCalendar />
+    </SafeAreaView>
   );
 }

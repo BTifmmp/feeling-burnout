@@ -114,7 +114,9 @@ export default function MoodDaysBar({ moodData }: Props) {
         initialScrollIndex={todayIndex}
         renderItem={renderItem}
         horizontal
+        removeClippedSubviews={false}
         showsHorizontalScrollIndicator={false}
+        windowSize={35}
         initialNumToRender={31}
         maxToRenderPerBatch={31}
         contentContainerStyle={{ paddingHorizontal: 4 }}

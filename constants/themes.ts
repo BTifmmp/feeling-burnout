@@ -55,3 +55,9 @@ export const Colors = {
     },
   }
 }
+
+export function getMotiColors(colorScheme: 'light' | 'dark'): string[] {
+  return colorScheme === 'dark'
+    ? ['#4d4d4d', '#5c5c5c', '#4d4d4d'] // darker grays for dark mode
+    : ['#cccccc', '#bcbcbc', '#cccccc']; // darker whites for light mode
+}
