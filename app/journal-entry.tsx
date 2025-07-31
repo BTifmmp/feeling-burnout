@@ -14,6 +14,8 @@ import Animated from 'react-native-reanimated';
 import MoodBadge, { MoodType } from '@/components/pages/journal/MoodBadge';
 import { Pressable } from 'react-native-gesture-handler';
 import Header from '@/components/base/Header';
+import { useSnackbar } from '@/components/base/Snackbar';
+import { addJournal } from '@/utils/queries';
 
 export default function JournalEntry() {
   const { colorScheme = 'light' } = useColorScheme();
@@ -21,6 +23,8 @@ export default function JournalEntry() {
   const badgeOptions: MoodType[] = ['positive', 'neutral', 'negative'];
   const [selectedBadge, setSelectedBadge] =
     useState<'positive' | 'negative' | 'neutral'>('positive');
+
+  const snackbar = useSnackbar();
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={{ top: true, bottom: true }}>
@@ -33,7 +37,15 @@ export default function JournalEntry() {
           style={{ paddingHorizontal: 12, paddingVertical: 6 }}
           textStyle={{ fontSize: 14, fontWeight: '500' }}
           title='Add'
-          onPress={router.back}
+          onPress={() => {
+            addJournal(entry, selectedBadge);
+            snackbar({
+              message: 'Journal entry added!',
+              type: 'info',
+              duration: 3000,
+            });
+            router.back()
+          }}
         />
       } />
 

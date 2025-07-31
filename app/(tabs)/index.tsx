@@ -17,6 +17,7 @@ import { StyleSheet } from 'react-native';
 import { router } from 'expo-router'
 import EasyAccessMoods from '@/components/pages/main/EasyAccessMoods'
 
+
 export default function HomeScreen() {
   const { colorScheme = "light" } = useColorScheme();
 

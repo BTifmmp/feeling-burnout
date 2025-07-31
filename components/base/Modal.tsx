@@ -1,10 +1,11 @@
 import React from 'react';
 import { Modal as RNModal, View, Pressable } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 type Props = {
   isVisible: boolean;
   onClose: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   backdropOpacity?: number;
 };
 
@@ -24,19 +25,21 @@ export default function Modal({
       statusBarTranslucent={true}
       onRequestClose={onClose}
     >
-      {/* Backdrop */}
-      <Pressable
-        className="absolute inset-0 bg-black"
-        style={{ opacity: backdropOpacity }}
-        onPress={onClose}
-      />
 
       {/* Modal content */}
-      <View className='p-sides justify-center items-center flex-1'>
-        <View className="rounded-3xl relative p-card bg-card-reversed w-full">
-          {children}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        {/* Backdrop */}
+        <Pressable
+          className="absolute inset-0 bg-black"
+          style={{ opacity: backdropOpacity }}
+          onPress={onClose}
+        />
+        <View className='p-sides justify-center items-center flex-1'>
+          <View className="rounded-3xl p-card bg-card-reversed w-full">
+            {children}
+          </View>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </RNModal>
   );
 }

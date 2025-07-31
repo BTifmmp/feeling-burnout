@@ -1,14 +1,14 @@
-import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import SafeAreaView from '@/components/base/MySafeArea';
-import { format, isValid } from 'date-fns';
+import { format, isValid, set } from 'date-fns';
 import { useColorScheme } from 'nativewind';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Edit, Plus, Trash } from 'lucide-react-native';
+import { Calendar1Icon, Edit, Plus, Trash, X } from 'lucide-react-native';
 import { Colors } from '@/constants/themes';
 import { router } from 'expo-router';
 import MoodBadge, { moodStyleMap, MoodType } from '@/components/pages/journal/MoodBadge';
-import { Pressable } from 'react-native-gesture-handler';
+// import { Pressable } from 'react-native-gesture-handler';
 import { Button, IconButton } from '@/components/base/Button';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { useMenuStyles } from '@/styles/menuStyles';
@@ -21,9 +21,9 @@ import { FlashList } from '@shopify/flash-list';
 import { useSnackbar } from '@/components/base/Snackbar';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { ScrollView } from 'react-native-gesture-handler';
-
-
-type JournalRow = Database['public']['Tables']['journals']['Row'];
+import { Pressable } from 'react-native';
+import MonthYearModal from '@/components/modals/MonthYearModal';
+import { JournalRow } from '@/utils/types';
 
 const groupByMonth = (entries: JournalRow[]) => {
   const grouped: { [key: string]: JournalRow[] } = {};
@@ -36,6 +36,23 @@ const groupByMonth = (entries: JournalRow[]) => {
   return grouped;
 };
 
+function filterByDate(entries: JournalRow[], dateString: string): JournalRow[] {
+  return entries.filter((entry) => {
+    const date = new Date(entry.at_local_time_added);
+    if (!isValid(date)) return false;
+
+    const [year, month] = dateString.split(' '); // e.g. ['2025', 'Any'] or ['2025', 'July']
+    const entryYear = format(date, 'yyyy');
+    const entryMonth = format(date, 'MMMM');
+
+    if (month === 'Any') {
+      return entryYear === year;
+    } else {
+      return entryYear === year && entryMonth === month;
+    }
+  });
+}
+
 
 const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
 
@@ -43,10 +60,17 @@ const badgeOptions: MoodType[] = ['all', 'positive', 'neutral', 'negative'];
 const Journal = observer(() => {
   const { colorScheme = 'light' } = useColorScheme();
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
+  const [selectedBadgeDelay, setSelectedBadgeDelay] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
+  const [version, setVersion] = useState(0);
+  const [isDateModalVisible, setIsDateModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   const flatData = useComputed(() => {
     const allEntries = Object.values(journals$.get() || {});
-    const sorted = allEntries.sort((a, b) => {
+
+    const filteredEntries = selectedDate === '' ? allEntries : filterByDate(allEntries, selectedDate);
+
+    const sorted = filteredEntries.sort((a, b) => {
       const aTime = new Date(a.at_local_time_added).getTime();
       const bTime = new Date(b.at_local_time_added).getTime();
       return bTime - aTime;
@@ -64,91 +88,162 @@ const Journal = observer(() => {
       flat.push(...entries); // items
     });
 
+    setVersion((v) => v + 1); // trigger re-render on data change
+
     return flat;
-  }, [selectedBadge]);
+  }, [selectedBadgeDelay, selectedDate]);
+
+  const onBadgeChange = (badge: MoodType) => {
+    setSelectedBadge(badge);
+    flatData.set([]);
+    requestAnimationFrame(() => setSelectedBadgeDelay(badge));
+  };
+
+  const showModal = useCallback(() => {
+    setIsDateModalVisible(true);
+  }, []);
+
+  const itemSeparator = useMemo(() => {
+    return function Separator({ leadingItem, trailingItem }: { leadingItem: any; trailingItem: any }) {
+      if (typeof trailingItem === 'string' || typeof leadingItem === 'string') return null;
+
+      return (
+        <View className='py-2 mb-2 border-b-hairline border-gray-highlight-300' />
+      );
+    };
+  }, []);
+
+  const listEmptyComponent = useMemo(() => {
+    return (
+      <Text className="text-2xl text-text-primary mt-8">
+        {selectedBadge === selectedBadgeDelay ? 'No journal entries' : ''}
+      </Text>
+    );
+  }, [selectedBadge, selectedBadgeDelay]);
+
+  const clearSelectedDate = useCallback(() => {
+    setSelectedDate('');
+  }, []);
+
+  const listHeaderComponent = useMemo(() => {
+    return (
+      <>
+        <View className='flex-row justify-between mt-1'>
+          <Text className="text-4xl text-text-primary font-bold mb-2 pt-sides">
+            Journal
+          </Text>
+          <View className='justify-center'>
+            <IconButton
+              variant='ghost'
+              onPress={showModal}
+              icon={<Calendar1Icon size={20} color={Colors[colorScheme].textPrimary} />}
+            />
+          </View>
+        </View>
+
+        <Button
+          variant='highlight100'
+          style={{
+            marginTop: 12,
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+          onPress={() => router.push('/journal-entry')}
+        >
+          <Text className="ml-2 text-lg text-text-primary font-medium">
+            Add Entry
+          </Text>
+          <Plus color={Colors[colorScheme].textPrimary} />
+        </Button>
+
+        <Animated.ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mt-5"
+        >
+          <View className="flex-row gap-2.5">
+            {badgeOptions.map((badge) => {
+              const isSelected = badge === selectedBadge;
+              return (
+                <Pressable
+                  key={badge}
+                  onPress={() => onBadgeChange(badge as MoodType)}
+                >
+                  <MoodBadge
+                    mood={badge}
+                    isSelected={isSelected}
+                    containerClassName="px-4 py-2"
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
+        </Animated.ScrollView>
+        {selectedDate !== '' &&
+          <View className='flex-row'>
+            <View className="mt-4 flex-row items-center bg-gray-highlight-100 rounded-full overflow-hidden">
+              <View className='bg-card px-4 py-2'>
+                <Text className="text-base text-text-secondary">
+                  {`${selectedDate}`}
+                </Text>
+              </View>
+              <Pressable onPress={clearSelectedDate} className="bg-gray-highlight-100 px-3 pr-4">
+                <X size={18} color={Colors[colorScheme].textPrimary} />
+              </Pressable>
+            </View>
+          </View>}
+      </>
+    );
+  }, [selectedBadge, colorScheme, selectedDate]);
+
+  const renderItem = useCallback(({ item }: { item: string | JournalRow }) => {
+    if (typeof item === 'string') {
+      return (
+        <Text className="text-xl text-text-primary font-medium mt-8 mb-2">
+          {item}
+        </Text>
+      );
+    } else {
+      return <JournalEntry entry={item} />;
+    }
+  }, []);
+
+  const keyExtractor = useCallback((item: string | JournalRow) => {
+    return typeof item === 'string' ? item : item.id;
+  }, []);
+
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
-      <FlashList
-        renderScrollComponent={ScrollView}
-        data={flatData.get()}
-        keyExtractor={(item) => (typeof item === 'string' ? item : item.id)}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 80 }}
-        estimatedItemSize={100}
-        renderItem={({ item }) => {
-          if (typeof item === 'string') {
-            return (
-              <Text className="text-xl text-text-primary font-medium mt-8 mb-2">
-                {item}
-              </Text>
-            );
-          } else {
-            return (
-              <View key={item.id}>
-                <JournalEntry entry={item} />
-              </View>
-            );
-          }
-        }}
-        ItemSeparatorComponent={({ leadingItem, trailingItem }) => (
-          typeof trailingItem === 'string' || typeof leadingItem === 'string' ? null :
-            <View className='py-2 mb-2 border-b-hairline border-gray-highlight-300' />
-        )
-        }
-        ListEmptyComponent={
-          <Text className="text-2xl text-text-primary mt-8">No journal entries</Text>
-        }
-        ListHeaderComponent={
-          <>
-            <Text className="text-4xl text-text-primary font-bold mb-2 mt-1 pt-sides">
-              Journal
-            </Text>
-            <Button
-              variant='highlight100'
-              style={{
-                marginTop: 12,
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-              onPress={() => router.push('/journal-entry')}
-            >
-              <Text className="ml-2 text-lg text-text-primary font-medium">
-                Add Entry
-              </Text>
-              <Plus color={Colors[colorScheme].textPrimary} />
-            </Button>
-
-            <Animated.ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mt-5"
-            >
-              <View className="flex-row gap-2.5">
-                {badgeOptions.map((badge) => {
-                  const isSelected = badge === selectedBadge;
-                  return (
-                    <Pressable
-                      key={badge}
-                      onPress={() => setSelectedBadge(badge)}
-                    >
-                      <MoodBadge
-                        mood={badge}
-                        isSelected={isSelected}
-                        containerClassName="px-4 py-2"
-                      />
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </Animated.ScrollView>
-          </>
-        }
-      />
-    </SafeAreaView>
+    <View className='flex-1'>
+      <View>
+        <MonthYearModal
+          isVisible={isDateModalVisible}
+          onClose={() => { setIsDateModalVisible(false) }}
+          onSelect={(date) => { setSelectedDate(date), setIsDateModalVisible(false) }} />
+      </View>
+      <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
+        <FlashList
+          data={flatData.get()}
+          extraData={version} // trigger re-render on data change
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.container}
+          estimatedItemSize={300}
+          renderItem={renderItem}
+          ItemSeparatorComponent={itemSeparator}
+          ListEmptyComponent={listEmptyComponent}
+          ListHeaderComponent={listHeaderComponent}
+        />
+      </SafeAreaView>
+    </View>
   );
 });
+
+const styles = StyleSheet.create({
+  container: { paddingHorizontal: 20, paddingBottom: 80 }
+});
+
 
 export default Journal;
 
