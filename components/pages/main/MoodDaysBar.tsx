@@ -6,6 +6,7 @@ import {
   startOfMonth,
   endOfMonth,
   isToday,
+  isValid,
 } from 'date-fns';
 import { MoodRow } from '@/utils/types';
 import { Button } from '@/components/base/Button';
@@ -81,8 +82,8 @@ export default function MoodDaysBar({ moodData }: Props) {
 
   const moodMap: Record<string, MoodRow> = {};
   moodData?.forEach((entry) => {
-    if (entry.at_local_time_added) {
-      const dateKey = entry.at_local_time_added.toDateString();
+    if (isValid(new Date(entry.at_local_time_added))) {
+      const dateKey = new Date(entry.at_local_time_added).toDateString();
       moodMap[dateKey] = entry;
     }
   });
@@ -104,6 +105,7 @@ export default function MoodDaysBar({ moodData }: Props) {
   const renderItem = ({ item }: { item: { date: Date; mood?: MoodRow } }) => (
     <DayCell date={item.date} mood={item.mood} />
   );
+
 
   return (
     <View className="-mx-card mt-4">

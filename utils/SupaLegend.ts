@@ -37,7 +37,7 @@ export const moods$ = observable(
     supabase,
     collection: 'moods',
     select: (from) =>
-      from.select('id, mood_value, inserted_at, updated_at, deleted'),
+      from.select('id, mood_value, inserted_at, updated_at, deleted, at_local_time_added'),
     actions: ['read', 'create', 'update', 'delete'],
     realtime: true,
     persist: {
@@ -56,7 +56,7 @@ export const journals$ = observable(
     supabase,
     collection: 'journals',
     select: (from) =>
-      from.select('id, entry, badge, inserted_at, updated_at, deleted'),
+      from.select('id, entry, badge, inserted_at, updated_at, deleted, at_local_time_added'),
     actions: ['read', 'create', 'update', 'delete'],
     realtime: true,
     persist: {

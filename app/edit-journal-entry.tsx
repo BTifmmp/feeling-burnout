@@ -15,6 +15,7 @@ import MoodBadge, { MoodType } from '@/components/pages/journal/MoodBadge';
 import { Pressable } from 'react-native-gesture-handler';
 import Header from '@/components/base/Header';
 import { useJournalEditStore } from '@/store/journalEditStore';
+import { updateJournal } from '@/utils/queries';
 
 export default function EditJournalEntry() {
   const { colorScheme = 'light' } = useColorScheme();
@@ -28,17 +29,16 @@ export default function EditJournalEntry() {
   // ⏬ Load entry into state on mount
   useEffect(() => {
     if (editingEntry) {
-      setEntry(editingEntry.content || '');
+      setEntry(editingEntry.entry || '');
       setSelectedBadge(editingEntry.badge as MoodType);
+    } else {
+      router.back();
     }
   }, [editingEntry]);
 
   const handleSave = () => {
-    console.log('Saved entry:', {
-      ...editingEntry,
-      content: entry,
-      flair: selectedBadge,
-    });
+    if (!editingEntry) return;
+    updateJournal(editingEntry.id, entry, selectedBadge as 'positive' | 'neutral' | 'negative');
     router.back(); // You can replace this with actual update logic
   };
 

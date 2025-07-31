@@ -10,5 +10,14 @@
   "userInterfaceStyle": "automatic",
   "web": {
     "bundler": "metro"
+  },
+  "android": {
+    "package": "com.btregit.feelingburnout"
+  },
+  "extra": {
+    "router": {},
+    "eas": {
+      "projectId": "c8317ec2-dc72-4c81-bc74-9bd9c9f167b5"
+    }
   }
 }

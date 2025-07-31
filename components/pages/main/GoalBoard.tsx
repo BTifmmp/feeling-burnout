@@ -7,6 +7,7 @@ import { Trash, Edit } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import { useMenuStyles } from '@/styles/menuStyles';
+import { Button } from '@/components/base/Button';
 
 interface GoalBoardProps {
   className?: string;
@@ -14,8 +15,7 @@ interface GoalBoardProps {
 
 export default function GoalBoard({ className }: GoalBoardProps) {
   const [items, setItems] = useState<string[]>([
-    'Take breaks during work hours',
-    'Say no to weekend meetings',
+    'Sleep 8 hours every night',
   ]);
   const { colorScheme = 'light' } = useColorScheme();
   const menuStyles = useMenuStyles();
@@ -78,6 +78,9 @@ export default function GoalBoard({ className }: GoalBoardProps) {
             </View>
           )
         })}
+      </View>
+      <View className="flex-row justify-end mt-4">
+        <Button style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add' onPress={() => { }} />
       </View>
     </Card>
   );

@@ -37,17 +37,22 @@ const EasyAccessMoods = observer(() => {
         if (isSameDay(new Date(mood.at_local_time_added), new Date())) {
           setSelectedMood(mood.id);
           setModalMood(mood.id);
-          setMoodsLoaded(true);
-          setModalDate(new Date());
-          setModalDate(new Date());
           break;
         }
       }
+      setModalDate(new Date());
+      setSelectedDate(new Date());
+
+      setTimeout(() => {
+        setMoodsLoaded(true);
+      }, 400);
+
     }
   }, [moods$.get()]);
 
+
   return (
-    <View style={{ height: 300, width: '100%' }} >
+    <View style={{ height: 260, width: '100%' }} >
       {!moodsLoaded && <MotiView
         transition={{
           type: 'timing',

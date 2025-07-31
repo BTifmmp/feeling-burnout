@@ -5,6 +5,8 @@ import { Card } from '@/components/base/Card';
 import { useColorScheme } from 'nativewind';
 import MoodBadge, { MoodType } from '@/components/pages/journal/MoodBadge';
 import { Pressable } from 'react-native-gesture-handler';
+import { addJournal } from '@/utils/queries';
+import { useSnackbar } from '@/components/base/Snackbar';
 
 interface JournalEntryBoxProps {
   className?: string;
@@ -13,6 +15,7 @@ interface JournalEntryBoxProps {
 export default function JournalEntryBox({ className }: JournalEntryBoxProps) {
   const [entry, setEntry] = useState('');
   const [moodBadge, setMoodBadge] = useState<'neutral' | 'positive' | 'negative'>('neutral');
+  const snackbar = useSnackbar();
 
   const { colorScheme = 'light' } = useColorScheme();
   const flairs: MoodType[] = ['positive', 'neutral', 'negative'];
@@ -55,7 +58,17 @@ export default function JournalEntryBox({ className }: JournalEntryBoxProps) {
 
       {/* Done Button */}
       <View className="flex-row justify-end mt-4">
-        <Button disabled={!(entry.length > 0)} style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add' onPress={() => { }} />
+        <Button disabled={!(entry.length > 0)} style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add'
+          onPress={() => {
+            addJournal(entry, moodBadge);
+            setEntry('');
+            setMoodBadge('neutral');
+            snackbar({
+              message: 'Journal entry added!',
+              type: 'info',
+              duration: 3000,
+            });
+          }} />
       </View>
     </Card>
   );

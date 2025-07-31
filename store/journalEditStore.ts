@@ -1,15 +1,9 @@
+import { JournalRow } from './../utils/types';
 import { create } from 'zustand';
 
-interface JournalEntry {
-  id: string;
-  date: Date;
-  content: string;
-  badge: 'positive' | 'neutral' | 'negative';
-}
-
 interface JournalStore {
-  editingEntry: JournalEntry | null;
-  setEditingEntry: (entry: JournalEntry) => void;
+  editingEntry: JournalRow | null;
+  setEditingEntry: (entry: JournalRow) => void;
   clearEditingEntry: () => void;
 }
 

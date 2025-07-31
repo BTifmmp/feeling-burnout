@@ -1,8 +1,5 @@
 import React from 'react';
 import { Modal as RNModal, View, Pressable } from 'react-native';
-import { X } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
-import { Colors } from '@/constants/themes';
 
 type Props = {
   isVisible: boolean;
@@ -26,7 +23,6 @@ export default function Modal({
       animationType="fade"
       statusBarTranslucent={true}
       onRequestClose={onClose}
-
     >
       {/* Backdrop */}
       <Pressable

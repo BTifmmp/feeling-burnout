@@ -9,31 +9,27 @@ interface RelaxColorCardProps {
 
 const variants = {
   meditation: {
-    image: require('@/assets/relax/meditation.png'),
     title: 'Meditation',
     description: 'Calm your mind and find inner peace through guided meditation.',
     gradientLight: ['#8fc4f9', '#b1d6fb'], // gentle, pastel blues
     gradientDark: ['#3B73C6', '#2B5BA3'],  // soft dark blues
   },
   breathing: {
-    image: require('@/assets/relax/breathing.png'),
     title: 'Breathing',
     description: 'Practice deep breathing exercises to reduce stress and improve focus.',
     gradientLight: ['#f8a75e', '#fdd0a1'], // soft peachy pastel
     gradientDark: ['#E07A00', '#B56300'],  // warm, softer dark orange
   },
   break: {
-    image: require('@/assets/relax/break.png'),
     title: 'Short Reset',
     description: 'Step away and recharge with a short, mindful break.',
-    // green gradient for light mode
     gradientLight: ['#A8E6CF', '#56C596'], // soft light green
     gradientDark: ['#3B8E48', '#2B6532'],
   },
 };
 
 export default function RelaxColorCard({ variant }: RelaxColorCardProps) {
-  const { image, title, description, gradientLight, gradientDark } = variants[variant];
+  const { title, description, gradientLight, gradientDark } = variants[variant];
   const { colorScheme = 'light' } = useColorScheme();
   const gradientColors = colorScheme === 'dark' ? gradientDark : gradientLight;
 

@@ -68,12 +68,7 @@ export default function JournalEntry() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Use a ScrollView so the growing TextInput can scroll when tall */}
-        {/* Card‑like container */}
         <View className='flex-1 px-sides pb-5'>
-          {/* Mood selector row */}
-
-          {/* Growing TextInput */}
           <TextInput
             className="text-xl text-text-primary"
             multiline

@@ -8,7 +8,8 @@ import {
   eachDayOfInterval,
   format,
   isSameMonth,
-  isSameDay
+  isSameDay,
+  isValid
 } from 'date-fns';
 import { Card } from '@/components/base/Card';
 import { IconButton } from '@/components/base/Button';
@@ -35,8 +36,10 @@ const MoodGrid = observer(({ className }: { className?: string }) => {
   const moodEntries = Object.values(moods$.get() || {});
   const moodData: Record<string, MoodRow> = {};
   for (const entry of moodEntries) {
-    const dateKey = format(entry.at_local_time_added, 'yyyy-MM-dd');
-    moodData[dateKey] = entry;
+    if (isValid(new Date(entry.at_local_time_added))) {
+      const dateKey = format(new Date(entry.at_local_time_added), 'yyyy-MM-dd');
+      moodData[dateKey] = entry;
+    }
   }
 
   const [currentMonth, setCurrentMonth] = useState(new Date());

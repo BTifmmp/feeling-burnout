@@ -1,18 +1,14 @@
 // components/base/SnackbarProvider.tsx
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import { Text, Pressable, View } from 'react-native';
+import { Text, Pressable, View, Dimensions } from 'react-native';
 import SafeAreaView from '@/components/base/MySafeArea';
-import Animated, { FadeInLeft, FadeOutRight, SlideInDown, SlideInLeft, SlideInUp, SlideOutRight, SlideOutUp } from 'react-native-reanimated';
+import Animated, { FadeInLeft, FadeOutRight } from 'react-native-reanimated';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import { AlertCircle, CheckCircle2, Info } from 'lucide-react-native';
-import { FullWindowOverlay } from 'react-native-screens';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-const bgClass = {
-  success: 'bg-green-600',
-  error: 'bg-red-600',
-  info: 'bg-gray-800',
-};
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface SnackbarOptions {
   message: string;
@@ -74,6 +70,9 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
         return null;
     }
   };
+  const renderRightActions = () => (
+    <View style={{ width: '120%', backgroundColor: 'transparent' }} />
+  )
 
   return (
     <SnackbarContext.Provider value={showSnackbar}>
@@ -85,50 +84,63 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
           pointerEvents="box-none"
           className="absolute top-0 bottom-0 left-0 right-0 justify-start items-center z-[9999]"
         >
-          <Animated.View
-            entering={FadeInLeft.duration(300)}
-            exiting={FadeOutRight.duration(300)}
-            className="px-8 py-4 rounded-0 mt-0 shadow-xl w-full"
-            style={{
-              backgroundColor:
-                Colors[colorScheme === 'dark' ? 'light' : 'dark'].grayHighlight100,
+          <Swipeable
+            containerStyle={{ width: '100%' }}
+            rightThreshold={SCREEN_WIDTH * 0.25}
+            renderRightActions={renderRightActions}
+            friction={3}
+            renderLeftActions={renderRightActions}
+            onSwipeableOpen={() => {
+              clearExistingTimeout();
+              hideSnackbar();
             }}
-          >
-            <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row items-center flex-1 gap-2">
-                {renderIcon()}
-                <Text
-                  style={{
-                    color:
-                      Colors[colorScheme === 'dark' ? 'light' : 'dark'].textPrimary,
-                  }}
-                  className="text-text-primary flex-shrink"
-                >
-                  {snackbar.message}
-                </Text>
-              </View>
-
-              {snackbar.actionText && snackbar.onActionPress && (
-                <Pressable onPress={() => {
-                  snackbar.onActionPress?.();
-                  if (snackbar.hideSnackbarOnActionPress) {
-                    clearExistingTimeout();
-                    hideSnackbar();
-                  }
-                }}>
+            leftThreshold={SCREEN_WIDTH * 0.25}>
+            <Animated.View
+              entering={FadeInLeft.duration(300)}
+              exiting={FadeOutRight.duration(300)}
+              className="px-8 py-4 rounded-0 mt-0 shadow-xl w-full"
+              style={{
+                backgroundColor:
+                  Colors[colorScheme === 'dark' ? 'light' : 'dark'].grayHighlight100,
+              }}
+            >
+              <View className="flex-row items-center justify-between w-full">
+                <View className="flex-row items-center flex-1 gap-2">
+                  {renderIcon()}
                   <Text
                     style={{
                       color:
-                        Colors[colorScheme === 'dark' ? 'light' : 'dark'].blueButton,
+                        Colors[colorScheme === 'dark' ? 'light' : 'dark'].textPrimary,
                     }}
-                    className="ml-4 font-semibold"
+                    className="text-text-primary flex-shrink"
                   >
-                    {snackbar.actionText}
+                    {snackbar.message}
                   </Text>
-                </Pressable>
-              )}
-            </View>
-          </Animated.View>
+                </View>
+
+                {snackbar.actionText && snackbar.onActionPress && (
+                  <Pressable onPress={() => {
+                    snackbar.onActionPress?.();
+                    if (snackbar.hideSnackbarOnActionPress) {
+                      clearExistingTimeout();
+                      hideSnackbar();
+                    }
+                  }}>
+                    <Text
+                      style={{
+                        color:
+                          Colors[colorScheme === 'dark' ? 'light' : 'dark'].blueButton,
+                      }}
+                      className="ml-4 font-semibold"
+                    >
+                      {snackbar.actionText}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </Animated.View>
+          </Swipeable>
+
         </SafeAreaView>
       )}
     </SnackbarContext.Provider>

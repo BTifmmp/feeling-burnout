@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { useMoodStore } from '@/store/moodStore';
 import { saveMood } from '@/utils/queries';
 import { MoodsMap } from '@/constants/maps';
+import { useSnackbar } from '@/components/base/Snackbar';
 
 type MoodSelectorModalProps = {
   onClose: () => void;
@@ -20,11 +21,18 @@ export default function MoodSelectModal({ onClose, onSelectMood }: MoodSelectorM
 
   const formattedDate = format(modalDate, 'd MMMM yyyy');
 
+  const snackbar = useSnackbar();
+
   const handleSelectMood = (moodValue: number) => {
     const moodId = saveMood(modalDate, moodValue);
     setModalMood(moodId);
-    onSelectMood?.(moodId); // Call the onSelectMood callback if provided
-    onClose(); // Close after selection
+    onSelectMood?.(moodId);
+    onClose();
+    snackbar({
+      message: 'Mood Selected!',
+      type: 'info',
+      duration: 3000,
+    });
   };
 
   return (
@@ -33,7 +41,7 @@ export default function MoodSelectModal({ onClose, onSelectMood }: MoodSelectorM
         {formattedDate}
       </Text>
 
-      <Text className='text-xl text-text-primary mt-6'>How are you feeling?</Text>
+      <Text className='text-xl text-text-primary mt-6'>Select mood</Text>
 
       <View className='flex-row justify-between gap-4 px-4 mt-4 bg-gray-highlight-100 rounded-3xl py-4'>
         {MoodsMap.map((mood) => (
