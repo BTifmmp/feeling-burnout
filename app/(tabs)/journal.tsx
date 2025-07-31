@@ -64,8 +64,13 @@ const Journal = observer(() => {
   const [version, setVersion] = useState(0);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [hasJournalLoaded, setHasJournalLoaded] = useState(false);
 
   const flatData = useComputed(() => {
+    if (!hasJournalLoaded && journals$.get() != undefined) {
+      setHasJournalLoaded(true);
+    }
+
     const allEntries = Object.values(journals$.get() || {});
 
     const filteredEntries = selectedDate === '' ? allEntries : filterByDate(allEntries, selectedDate);
@@ -116,14 +121,14 @@ const Journal = observer(() => {
   const listEmptyComponent = useMemo(() => {
     return (
       <Text className="text-2xl text-text-primary mt-8">
-        {selectedBadge === selectedBadgeDelay ? 'No journal entries' : ''}
+        {selectedBadge === selectedBadgeDelay && hasJournalLoaded ? 'No journal entries' : ''}
       </Text>
     );
   }, [selectedBadge, selectedBadgeDelay]);
 
   const clearSelectedDate = useCallback(() => {
     setSelectedDate('');
-  }, []);
+  }, [hasJournalLoaded]);
 
   const listHeaderComponent = useMemo(() => {
     return (
@@ -201,7 +206,7 @@ const Journal = observer(() => {
   const renderItem = useCallback(({ item }: { item: string | JournalRow }) => {
     if (typeof item === 'string') {
       return (
-        <Text className="text-xl text-text-primary font-medium mt-8 mb-2">
+        <Text className="text-2xl text-text-primary font-bold mt-8 mb-2">
           {item}
         </Text>
       );
