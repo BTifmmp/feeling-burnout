@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, useAnimatedScrollHandler, Extrapolation, useAnimatedRef, scrollTo, SharedValue, runOnJS } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, useAnimatedScrollHandler, Extrapolation, useAnimatedRef, scrollTo, SharedValue, runOnJS, withTiming, Easing } from 'react-native-reanimated';
 import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/component/ScrollView';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -16,6 +16,11 @@ type ScrollPickerProps = {
 export default function ScrollPicker({ options = ["Option1", "Option2", "Option3"], initialSelectedOption, onChange }: ScrollPickerProps) {
   const scrollOffset = useSharedValue(0);  // This shared value will control the scroll position
   const scrollViewRef = useAnimatedRef<AnimatedScrollView>()  // Ref for the ScrollView
+  const opacityScroll = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacityScroll.value,
+  }));
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -27,10 +32,10 @@ export default function ScrollPicker({ options = ["Option1", "Option2", "Option3
 
   const setScroll = () => {
     setTimeout(() => {
-      const initialIndex = options.indexOf(initialSelectedOption || options[0]) !== -1 ? options.indexOf(initialSelectedOption || options[0]) : 0;
+      const initialIndex = options.indexOf(initialSelectedOption || options[0]);
       if (scrollViewRef) {
         scrollOffset.value = initialIndex * ITEM_HEIGHT;
-        scrollViewRef.current?.scrollTo({ x: 0, y: initialIndex * ITEM_HEIGHT, animated: false });
+        scrollViewRef.current?.scrollTo({ x: 0, y: initialIndex * ITEM_HEIGHT, animated: false })
       }
     }, 1)
   }
@@ -62,10 +67,10 @@ export default function ScrollPicker({ options = ["Option1", "Option2", "Option3
       <Animated.View style={{ height: ITEM_HEIGHT * 3 }}>
         <View className="absolute w-full border-t-hairline border-b-hairline border-gray-highlight-300" style={{ height: ITEM_HEIGHT, top: ITEM_HEIGHT }}></View>
         <Animated.ScrollView
-          onLayout={setScroll}
+          onLayout={() => { setScroll(); setTimeout(() => { opacityScroll.value = withTiming(1, { duration: 200, easing: Easing.ease }); }, 10) }}
           ref={scrollViewRef}  // Attach the ref to the ScrollView
           showsVerticalScrollIndicator={false}
-          style={{ height: ITEM_HEIGHT * ITEMS_VISIBLE }}
+          style={{ height: ITEM_HEIGHT * ITEMS_VISIBLE, ...animatedStyle }}
           onScroll={scrollHandler}
           snapToOffsets={Array.from({ length: options.length }, (_, i) => i * ITEM_HEIGHT)}
           decelerationRate={'fast'}
@@ -94,7 +99,6 @@ function AnimatedPickerItem({ label, index, scrollOffset }: PickerItemProps) {
 
   const animatedStyle = useAnimatedStyle(() => {
     const distance = Math.abs(scrollOffset.value - offset);
-    // console.log(scrollOffset.value)
 
     if (distance > ITEM_HEIGHT * 2) return {};
 

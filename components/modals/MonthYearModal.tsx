@@ -16,7 +16,7 @@ const months = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const years = Array.from({ length: 21 }, (_, i) => (new Date().getFullYear() - i + 10).toString());
+const years = Array.from({ length: 21 }, (_, i) => (new Date().getFullYear() + i - 10).toString());
 
 export default function MonthYearModal({ onClose, isVisible, onSelect }: MonthYearModalProps) {
   const today = format(new Date(), "MMMM yyyy");

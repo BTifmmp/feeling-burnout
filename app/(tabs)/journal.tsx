@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import SafeAreaView from '@/components/base/MySafeArea';
 import { format, isValid, set } from 'date-fns';
 import { useColorScheme } from 'nativewind';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInUp, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Calendar1Icon, Edit, Plus, Trash, X } from 'lucide-react-native';
 import { Colors } from '@/constants/themes';
 import { router } from 'expo-router';
@@ -61,9 +61,13 @@ const Journal = observer(() => {
   const { colorScheme = 'light' } = useColorScheme();
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
   const [selectedBadgeDelay, setSelectedBadgeDelay] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
+
+
   const [version, setVersion] = useState(0);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDateDelay, setSelectedDateDelay] = useState<string>('');
+
   const [hasJournalLoaded, setHasJournalLoaded] = useState(false);
 
   const flatData = useComputed(() => {
@@ -96,13 +100,19 @@ const Journal = observer(() => {
     setVersion((v) => v + 1); // trigger re-render on data change
 
     return flat;
-  }, [selectedBadgeDelay, selectedDate]);
+  }, [selectedBadgeDelay, selectedDateDelay]);
 
   const onBadgeChange = (badge: MoodType) => {
     setSelectedBadge(badge);
     flatData.set([]);
     requestAnimationFrame(() => setSelectedBadgeDelay(badge));
   };
+
+  const onDateChange = (date: string) => {
+    setSelectedDate(date);
+    flatData.set([]);
+    requestAnimationFrame(() => setSelectedDateDelay(date));
+  }
 
   const showModal = useCallback(() => {
     setIsDateModalVisible(true);
@@ -121,13 +131,13 @@ const Journal = observer(() => {
   const listEmptyComponent = useMemo(() => {
     return (
       <Text className="text-2xl text-text-primary mt-8">
-        {selectedBadge === selectedBadgeDelay && hasJournalLoaded ? 'No journal entries' : ''}
+        {selectedBadge === selectedBadgeDelay && selectedDate === selectedDateDelay && hasJournalLoaded ? 'No journal entries' : ''}
       </Text>
     );
-  }, [selectedBadge, selectedBadgeDelay]);
+  }, [selectedBadge, selectedBadgeDelay, selectedDate, selectedDateDelay, hasJournalLoaded]);
 
   const clearSelectedDate = useCallback(() => {
-    setSelectedDate('');
+    onDateChange(''); // clear selected date
   }, [hasJournalLoaded]);
 
   const listHeaderComponent = useMemo(() => {
@@ -226,7 +236,7 @@ const Journal = observer(() => {
         <MonthYearModal
           isVisible={isDateModalVisible}
           onClose={() => { setIsDateModalVisible(false) }}
-          onSelect={(date) => { setSelectedDate(date), setIsDateModalVisible(false) }} />
+          onSelect={(date) => { onDateChange(date), setIsDateModalVisible(false) }} />
       </View>
       <SafeAreaView className="flex-1 bg-background" edges={{ top: true }}>
         <FlashList
@@ -309,7 +319,7 @@ function JournalEntry({ entry }: JournalEntryProps) {
 
 
   return (
-    <View>
+    <Animated.View entering={FadeIn}>
       <Swipeable
         // enabled={false}
         ref={swipeRef}
@@ -359,6 +369,6 @@ function JournalEntry({ entry }: JournalEntryProps) {
           </View>
         </Pressable>
       </Swipeable >
-    </View >
+    </Animated.View >
   )
 }
