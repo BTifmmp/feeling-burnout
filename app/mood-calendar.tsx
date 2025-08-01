@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, useColorScheme, InteractionManager } from 'react-native';
 import { CalendarList, LocaleConfig } from 'react-native-calendars';
 import { format, isValid } from 'date-fns';
 import SafeAreaView from '@/components/base/MySafeArea';
@@ -53,6 +53,7 @@ export default function MoodCalendar() {
   const colorScheme = useColorScheme() ?? 'light';
   const myColors = Colors[colorScheme];
   const today = new Date();
+  const [isReady, setIsReady] = useState(false);
 
   const getMoodColor = useCallback((moodValue: number) => {
     // @ts-ignore
@@ -106,6 +107,14 @@ export default function MoodCalendar() {
     setMoodModalVisible(true);
   }, []);
 
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      setIsReady(true);
+    });
+
+    return () => task.cancel();
+  }, []);
+
   return (
     <SafeAreaView className='flex-1 bg-background' edges={{ top: true, bottom: true }}>
       <MoodModalCombined
@@ -117,12 +126,12 @@ export default function MoodCalendar() {
         }}
       />
       <Header title="Mood Calendar" />
-      <MemoizedCalendarList
+      {isReady && <MemoizedCalendarList
         colorScheme={'dark'}
         markedDates={markedDates.get()}
         onDayPress={onDayPress}
         calendarTheme={calendarTheme}
-      />
+      />}
     </SafeAreaView>
   );
 }
