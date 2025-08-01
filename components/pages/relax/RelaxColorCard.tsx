@@ -1,6 +1,5 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 import React from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useColorScheme } from 'nativewind';
 import Svg, { Path } from 'react-native-svg';
 
@@ -12,46 +11,38 @@ const variants = {
   meditation: {
     title: 'Meditation',
     description: 'Calm your mind and find inner peace through guided meditation.',
-    gradientLight: ['#8fc4f9', '#b1d6fb'], // gentle, pastel blues
-    gradientDark: ['#4766b5', '#4766b5'],  // soft dark blues
+    bgLight: '#8fc4f9', // light blue
+    bgDark: '#4766b5',  // dark blue
   },
   breathing: {
     title: 'Breathing',
     description: 'Practice deep breathing exercises to reduce stress and improve focus.',
-    gradientLight: ['#f8a75e', '#f8a75e'], // soft peachy pastel
-    gradientDark: ['#d97e0f', '#d97e0f'],  // warm, softer dark orange
+    bgLight: '#f8a75e', // light peach
+    bgDark: '#d97e0f',  // dark orange
   },
 };
 
 export default function RelaxColorCard({ variant }: RelaxColorCardProps) {
-  const { title, description, gradientLight, gradientDark } = variants[variant];
+  const { title, description, bgLight, bgDark } = variants[variant];
   const { colorScheme = 'light' } = useColorScheme();
-  const gradientColors = colorScheme === 'dark' ? gradientDark : gradientLight;
+  const backgroundColor = colorScheme === 'dark' ? bgDark : bgLight;
 
   return (
-    <View className='rounded-3xl overflow-hidden mb-3 h-48'>
-      <LinearGradient
-        colors={gradientColors as any}
-        start={{ x: 0, y: 0 }} // gradient start top-left
-        end={{ x: 1, y: 0 }}   // gradient end top-right (horizontal)
-        style={{ flex: 1, height: '100%' }}
-      >
-        <View className="flex-row items-center h-full z-10">
-          <View className="flex-1 h-full p-5">
-            <Text className="text-2xl font-bold mb-1 text-text-full">{title}</Text>
-            <Text className="text-lg text-text-full">{description}</Text>
-          </View>
-          {/* <Image source={image} className="w-2/5 h-full" resizeMode="cover" /> */}
-        </View>
-      </LinearGradient>
-      <View className='absolute bottom-0 left-0 right-0'>
+    <View
+      className="rounded-3xl overflow-hidden mb-3 h-48"
+      style={{ backgroundColor }}
+    >
+      <View className="flex-1 h-full p-card z-10">
+        <Text className="text-2xl font-bold mb-1 text-text-full">{title}</Text>
+        <Text className="text-lg text-text-full">{description}</Text>
+      </View>
+
+      {/* Wave decorations */}
+      <View className="absolute bottom-0 left-0 right-0">
         <Svg
           viewBox="0 0 1440 320"
-          preserveAspectRatio='none'
-          style={{
-            width: '100%',
-            height: 100,
-          }}
+          preserveAspectRatio="none"
+          style={{ width: '100%', height: 100 }}
         >
           <Path
             fill="#fff"
@@ -64,10 +55,7 @@ export default function RelaxColorCard({ variant }: RelaxColorCardProps) {
         <Svg
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
-          style={{
-            width: '100%',
-            height: 70,
-          }}
+          style={{ width: '100%', height: 70 }}
         >
           <Path
             fill="#fff"

@@ -11,10 +11,13 @@ import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SnackbarProvider } from '@/components/base/Snackbar';
 import { observer } from '@legendapp/state/react';
+import { Pressable, Text } from 'react-native';
 
 
 export default function RootLayout() {
-  return (<ObservedLayout />);
+  return (
+    <ObservedLayout />
+  );
 }
 
 const ObservedLayout = observer(() => {
@@ -30,6 +33,7 @@ const ObservedLayout = observer(() => {
           <MenuProvider>
             <SnackbarProvider>
               <StatusBar style={invertedColorScheme} />
+
               <Stack initialRouteName='(tabs)' screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors[colorScheme].background } }}>
                 <Stack.Screen name="journal-entry" />
                 <Stack.Screen name="edit-journal-entry" />
