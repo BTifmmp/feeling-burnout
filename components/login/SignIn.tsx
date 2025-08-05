@@ -6,15 +6,11 @@ import GoogleSignButton from '@/components/login/GoogleButton';
 import { Pressable } from 'react-native-gesture-handler';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useAuthStore } from '@/store/authStore';
-import { Colors } from '@/constants/themes';
-import { colorScheme, useColorScheme } from 'nativewind';
 
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const { colorScheme = 'light' } = useColorScheme() // your custom theme state
 
   const { signIn, errorMsg, clearError, userLoading } = useAuthStore();
 
@@ -51,21 +47,10 @@ export default function SignIn() {
         </Pressable>
       </View>
 
-      <View className='flex-row'>
-        <Text className="text-red-500 mb-2">
-          {errorMsg ? errorMsg.charAt(0).toUpperCase() + errorMsg.slice(1) : ''}
-        </Text>
 
-        {errorMsg && errorMsg.toLowerCase() === 'email not confirmed' && (
-          <Pressable
-            onPress={() => router.replace('/email-verification')}
-          >
-            <Text style={{ color: Colors[colorScheme].blueButton, textAlign: 'center', fontWeight: '500' }}>
-              {'  '}Verify now
-            </Text>
-          </Pressable>
-        )}
-      </View>
+      <Text className="text-red-500 mb-2">
+        {errorMsg ? errorMsg.charAt(0).toUpperCase() + errorMsg.slice(1) : ''}
+      </Text>
 
       <Button
         variant="blue"

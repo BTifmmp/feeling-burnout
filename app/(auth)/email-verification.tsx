@@ -26,14 +26,6 @@ export default function VerifyEmail() {
           We've sent a confirmation link to your email. Click the link to verify your account.
         </Text>
 
-
-        <Button
-          variant="blue"
-          title="Resend Verification Email"
-          onPress={handleResendEmail}
-          style={{ paddingHorizontal: 24, paddingVertical: 10 }}
-        />
-
         <Button
           variant="ghost"
           title="Back to Login"
