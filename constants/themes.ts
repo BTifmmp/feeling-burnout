@@ -17,13 +17,12 @@ export const Colors = {
     grayHighlight100: '#f0f0f0',
     grayHighlight200: '#e0e0e0',
     grayHighlight300: '#c0c0c0',
-
     moodColors: {
-      0: '#FF6B6B', // vibrant red – low mood
-      1: '#FFA94D', // bright orange – slightly low
-      2: '#FFD93D', // sunny yellow – neutral
-      3: '#A7F3D0', // fresh mint green – improving
-      4: '#6EE7B7', // lively green – good
+      0: '#FF6B6B', // Soft coral red
+      1: '#ffb957', // Warm pastel orange
+      2: '#ffe375', // Buttery pastel yellow
+      3: '#8ce693', // Pastel mint green
+      4: '#49d66a', // Soft but saturated green
     },
   },
 
@@ -46,13 +45,13 @@ export const Colors = {
     grayHighlight200: '#404040',
     grayHighlight300: '#484848',
 
-    moodColors: {
-      0: '#FF6B6B',  // red
-      1: '#FFA94D',  // orange
-      2: '#FFD93D',  // yellow
-      3: '#34D399',  // mint green
-      4: '#10B981',  // stronger green for contrast
-    },
+moodColors: {
+  0: '#FF6B6B', // Soft coral red
+  1: '#ffb957', // Warm pastel orange
+  2: '#ffe375', // Buttery pastel yellow
+  3: '#8ce693', // Pastel mint green
+  4: '#49d66a', // Soft but saturated green
+},
   }
 }
 

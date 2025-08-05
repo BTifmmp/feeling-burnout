@@ -127,7 +127,7 @@ export default function MoodCalendar() {
       />
       <Header title="Mood Calendar" />
       {isReady && <MemoizedCalendarList
-        colorScheme={'dark'}
+        colorScheme={colorScheme}
         markedDates={markedDates.get()}
         onDayPress={onDayPress}
         calendarTheme={calendarTheme}

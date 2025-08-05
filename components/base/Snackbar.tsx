@@ -55,15 +55,17 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
   };
 
   const iconColor = Colors[colorScheme === 'dark' ? 'light' : 'dark'].textPrimary;
+  const iconErrorColor = colorScheme === 'dark' ? '#FF6B6B' : '#D32F2F'; // Custom red shades
+  const iconSuccessColor = colorScheme === 'dark' ? '#4CAF50' : '#388E3C'; // Custom green shades
 
   const renderIcon = () => {
     if (!snackbar?.type) return null;  // <--- Don't show icon if no type
 
     switch (snackbar.type) {
       case 'error':
-        return <AlertCircle size={20} color={iconColor} />;
+        return <AlertCircle size={20} color={iconErrorColor} />;
       case 'success':
-        return <CheckCircle2 size={20} color={iconColor} />;
+        return <CheckCircle2 size={20} color={iconSuccessColor} />;
       case 'info':
         return <Info size={20} color={iconColor} />;
       default:

@@ -3,6 +3,7 @@ import { View, Text, Image, ImageSourcePropType, ViewStyle } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
+import Svg, { Path } from 'react-native-svg';
 
 type CardType = 'chat' | 'breathing';
 

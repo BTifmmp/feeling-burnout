@@ -1,7 +1,7 @@
 import CustomTabBar from '@/components/base/BottomBar';
 import { Colors } from '@/constants/themes';
 import { Tabs } from 'expo-router';
-import { colorScheme, useColorScheme } from 'nativewind';
+import { useColorScheme } from 'nativewind';
 
 export default function TabsLayout() {
 

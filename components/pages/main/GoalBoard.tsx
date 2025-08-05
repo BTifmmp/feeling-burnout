@@ -1,4 +1,4 @@
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, Animated } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { Pressable } from 'react-native';
 import { Card } from '@/components/base/Card';
@@ -7,13 +7,39 @@ import { Trash, Edit } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import { useMenuStyles } from '@/styles/menuStyles';
-import { Button } from '@/components/base/Button';
+import { Button, IconButton } from '@/components/base/Button';
+import NewGoalModal from '@/components/modals/NewGoalModal';
+import { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+
+export function RightAction(onPressDelete: () => void) {
+  return (progress: SharedValue<number>, dragX: SharedValue<number>) => {
+    const { colorScheme = 'light' } = useColorScheme();
+    const myColors = Colors[colorScheme];
+
+    const styleAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: dragX.value + 60 }],
+      };
+    });
+
+    return (
+      <Animated.View style={styleAnimation}>
+        <View style={{ width: 60 }} className='rounded-2xl flex-row items-center justify-center h-full gap-2'>
+          <IconButton onPress={onPressDelete} variant='highlight200' icon={<Trash color={myColors.textPrimary} size={20} />} />
+        </View>
+      </Animated.View>
+    );
+  };
+}
 
 interface GoalBoardProps {
   className?: string;
 }
 
 export default function GoalBoard({ className }: GoalBoardProps) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const [items, setItems] = useState<string[]>([
     'Sleep 8 hours every night',
   ]);
@@ -36,12 +62,9 @@ export default function GoalBoard({ className }: GoalBoardProps) {
     ]);
   };
 
-  const handleEdit = (index: number) => {
-    Alert.alert('Edit Goal', `Edit goal: "${items[index]}"`);
-  };
-
   return (
     <Card className={className}>
+      <View><NewGoalModal visible={isModalVisible} onClose={() => { setIsModalVisible(false) }} /></View>
       <Text className="text-lg text-text-secondary mb-3">
         Setting goals and boundaries helps you stay grounded, focused, and in control of your time and energy — especially when life feels overwhelming.
       </Text>
@@ -67,20 +90,27 @@ export default function GoalBoard({ className }: GoalBoardProps) {
                 </Menu>
               </View>
 
-              <Pressable
-                onLongPress={() => menuRef.current?.open()}
-                className="bg-gray-highlight-100 px-4 py-4 rounded-2xl"
+              <Swipeable
+                dragOffsetFromRightEdge={40}
+                rightThreshold={60}
+                friction={2}
+                renderRightActions={RightAction(() => { handleDelete(index) })}
               >
-                <Text className="text-lg font-medium text-text-primary">
-                  {item}
-                </Text>
-              </Pressable>
+                <Pressable
+                  onLongPress={() => menuRef.current?.open()}
+                  className="bg-gray-highlight-100 px-4 py-4 rounded-2xl"
+                >
+                  <Text className="text-lg font-medium text-text-primary">
+                    {item}
+                  </Text>
+                </Pressable>
+              </Swipeable>
             </View>
           )
         })}
       </View>
       <View className="flex-row justify-end mt-4">
-        <Button style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add' onPress={() => { }} />
+        <Button style={{ paddingVertical: 6, paddingHorizontal: 16 }} textStyle={{ fontSize: 14 }} variant='blue' title='Add' onPress={() => { setIsModalVisible(true) }} />
       </View>
     </Card>
   );

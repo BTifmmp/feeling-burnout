@@ -1,5 +1,5 @@
 import { View, Text, KeyboardAvoidingView, Platform } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SafeAreaView from '@/components/base/MySafeArea'
 import StatusBarColor from '@/components/base/StatusBarColor'
 import BottomWaveCard from '@/components/pages/main/BottomWaveCard'

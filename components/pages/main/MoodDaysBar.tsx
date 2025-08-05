@@ -118,9 +118,10 @@ export default function MoodDaysBar({ moodData }: Props) {
         horizontal
         removeClippedSubviews={false}
         showsHorizontalScrollIndicator={false}
-        windowSize={35}
-        initialNumToRender={31}
-        maxToRenderPerBatch={31}
+        windowSize={60}
+        initialNumToRender={60}
+        maxToRenderPerBatch={60}
+        disableVirtualization
         contentContainerStyle={{ paddingHorizontal: 4 }}
         getItemLayout={getItemLayout}
       />

@@ -16,11 +16,11 @@ export const Themes = {
   "--color-gray-highlight-100": "#f0f0f0",
   "--color-gray-highlight-200": "#e0e0e0",
   "--color-gray-highlight-300": "#c0c0c0",
-  "--color-mood-colors-0": "#FF6B6B",
-  "--color-mood-colors-1": "#FFA94D",
-  "--color-mood-colors-2": "#FFD93D",
-  "--color-mood-colors-3": "#A7F3D0",
-  "--color-mood-colors-4": "#6EE7B7"
+  "--color-mood-colors-0": "#FF8585",
+  "--color-mood-colors-1": "#FFC267",
+  "--color-mood-colors-2": "#FFE98A",
+  "--color-mood-colors-3": "#A4EDAB",
+  "--color-mood-colors-4": "#6EEA84"
 }),
     dark: vars({
   "--color-background": "#151515",
@@ -37,10 +37,10 @@ export const Themes = {
   "--color-gray-highlight-200": "#404040",
   "--color-gray-highlight-300": "#484848",
   "--color-mood-colors-0": "#FF6B6B",
-  "--color-mood-colors-1": "#FFA94D",
-  "--color-mood-colors-2": "#FFD93D",
-  "--color-mood-colors-3": "#34D399",
-  "--color-mood-colors-4": "#10B981"
+  "--color-mood-colors-1": "#ffb957",
+  "--color-mood-colors-2": "#ffe375",
+  "--color-mood-colors-3": "#8ce693",
+  "--color-mood-colors-4": "#49d66a"
 })
   }
 };

@@ -1,5 +1,5 @@
 import { View, Text, Switch, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import SafeAreaView from '@/components/base/MySafeArea';
 import Animated from 'react-native-reanimated';
 import { Card, TopCardTitle } from '@/components/base/Card';
@@ -8,11 +8,14 @@ import { User2 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import StatusBarColor from '@/components/base/StatusBarColor';
+import { supabase } from '@/utils/SupaLegend';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Profile() {
   const { colorScheme = 'light' } = useColorScheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+  const { signOut } = useAuthStore();
 
   return (
     <View className='flex-1'>
@@ -32,7 +35,7 @@ export default function Profile() {
             </View>
             <Button
               variant="ghost"
-              onPress={() => alert('Logging out...')}
+              onPress={signOut}
               style={{ marginBottom: -10, paddingVertical: 8, borderRadius: 0, marginTop: 10 }}
             >
               <Text className="text-lg text-text-primary font-semibold">Log Out</Text>
