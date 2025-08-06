@@ -11,6 +11,7 @@ import {
 import { MoodRow } from '@/utils/types';
 import { Button } from '@/components/base/Button';
 import { useMoodStore } from '@/store/moodStore';
+import { moods$ } from '@/utils/SupaLegend';
 
 interface Props {
   moodData?: MoodRow[];

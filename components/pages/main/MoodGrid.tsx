@@ -17,8 +17,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import { moods$ } from '@/utils/SupaLegend';
-import MoodDetailsModal from '@/components/modals/MoodDetailsModal';
-import MoodSelectModal from '@/components/modals/MoodSelectModal';
 import { useMoodStore } from '@/store/moodStore';
 import { MoodRow } from '@/utils/types';
 import { observer } from '@legendapp/state/react';

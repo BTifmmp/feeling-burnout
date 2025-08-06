@@ -4,6 +4,7 @@ import { View, Text, TextInput } from 'react-native';
 import Modal from '@/components/base/Modal';
 import { Button } from '@/components/base/Button';
 import { useColorScheme } from 'nativewind';
+import { addGoal } from '@/utils/queries';
 
 type GoalModalProps = {
   visible: boolean;
@@ -15,6 +16,7 @@ export default function NewGoalModal({ visible, onClose }: GoalModalProps) {
   const { colorScheme = 'light' } = useColorScheme();
 
   const handleSave = () => {
+    addGoal(goal);
     setGoal('');
     onClose();
   };

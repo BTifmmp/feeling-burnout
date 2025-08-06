@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
+import { View, Text } from 'react-native';
 import SafeAreaView from '@/components/base/MySafeArea';
 import { Button } from '@/components/base/Button';
 import { router } from 'expo-router';

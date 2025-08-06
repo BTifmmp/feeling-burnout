@@ -9,21 +9,21 @@ import { v4 as uuidv4 } from 'uuid';
 import { configureSynced } from '@legendapp/state/sync';
 import { observablePersistAsyncStorage } from '@legendapp/state/persist-plugins/async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '@/utils/supabaseClient';
+import { useAuthStore } from '@/store/authStore';
 
-const supabase = createClient<Database>(
-  process.env.EXPO_PUBLIC_SUPABASE_URL as string,
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string,
-  {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-}
-);
 
-export { supabase };
+export const userId$ = observable(useAuthStore.getState().user?.id || '');
+
+useAuthStore.subscribe((state) => {
+  if (state.user?.id) {
+    userId$.set(state.user.id);
+  } else {
+    userId$.set('');
+  }
+}, (prev, next) => prev.user?.id !== next.user?.id);
+
+
 
 const generateId = () => uuidv4();
 
@@ -39,15 +39,18 @@ const customSynced = configureSynced(syncedSupabase, {
   fieldDeleted: 'deleted',
 });
 
+const uid = '';
+
 // ------------------ Moods Store ------------------
 export const moods$ = observable(
   customSynced({
     supabase,
     collection: 'moods',
     select: (from) =>
-      from.select('id, mood_value, inserted_at, updated_at, deleted, at_local_time_added'),
-    actions: ['read', 'create', 'update', 'delete'],
-    realtime: true,
+      from.select('id, mood_value, at_local_time_added'),
+    actions: ['read', 'create', 'update'],
+    filter: (select) => select.eq('user_id', userId$.get()),
+    realtime: { filter: `user_id=eq.${userId$.get()}` },
     persist: {
       name: 'moods',
       retrySync: true,
@@ -64,11 +67,32 @@ export const journals$ = observable(
     supabase,
     collection: 'journals',
     select: (from) =>
-      from.select('id, entry, badge, inserted_at, updated_at, deleted, at_local_time_added'),
-    actions: ['read', 'create', 'update', 'delete'],
-    realtime: true,
+      from.select('id, entry, badge, at_local_time_added'),
+    actions: ['read', 'create', 'update'],
+    filter: (select) => select.eq('user_id', userId$.get()),
+    realtime: { filter: `user_id=eq.${userId$.get()}` },
     persist: {
       name: 'journals',
+      retrySync: true,
+    },
+    retry: {
+      infinite: true,
+    },
+  })
+);
+
+// ------------------ Goals Store ------------------
+export const goals$ = observable(
+  customSynced({
+    supabase,
+    collection: 'goals',
+    select: (from) =>
+      from.select('id, text, at_local_time_added'),
+    actions: ['read', 'create', 'update'],
+    filter: (select) => select.eq('user_id', userId$.get()),
+    realtime: { filter: `user_id=eq.${userId$.get()}` },
+    persist: {
+      name: 'goals',
       retrySync: true,
     },
     retry: {

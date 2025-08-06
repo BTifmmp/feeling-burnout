@@ -8,7 +8,6 @@ import { User2 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { Colors } from '@/constants/themes';
 import StatusBarColor from '@/components/base/StatusBarColor';
-import { supabase } from '@/utils/SupaLegend';
 import { useAuthStore } from '@/store/authStore';
 
 export default function Profile() {

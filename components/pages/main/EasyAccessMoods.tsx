@@ -6,7 +6,7 @@ import { format, isSameDay, isToday, set } from 'date-fns';
 import { useMoodStore } from '@/store/moodStore';
 import { MoodsMap } from '@/constants/maps';
 import { Button } from '@/components/base/Button';
-import { observer } from '@legendapp/state/react';
+import { observer, useComputed } from '@legendapp/state/react';
 import MoodModalCombined from '@/components/modals/MoodModalCombined';
 import { Skeleton } from 'moti/skeleton'
 import { MotiView } from 'moti';
@@ -32,7 +32,7 @@ const EasyAccessMoods = observer(() => {
 
   useEffect(() => {
     if (moods$.get() != undefined) {
-      const moods = Object.values(moods$.get());
+      const moods = Object.values(moods$.get() || {});
       for (const mood of moods) {
         if (isSameDay(new Date(mood.at_local_time_added), new Date())) {
           setSelectedMood(mood.id);
@@ -67,7 +67,12 @@ const EasyAccessMoods = observer(() => {
       </MotiView>}
 
 
-      <MoodModalCombined isVisible={isMoodSelectModalVisible} content='moodSelect' onClose={() => { setMoodSelectModalVisible(false) }} />
+      <MoodModalCombined
+        isVisible={isMoodSelectModalVisible}
+        content='moodSelect'
+        onClose={() => { setMoodSelectModalVisible(false) }}
+        onSelectMood={(mood) => { setSelectedMood(mood) }}
+      />
 
       <View style={{ opacity: moodsLoaded ? 1 : 0 }} >
         <MoodDaysBar moodData={moodData} />

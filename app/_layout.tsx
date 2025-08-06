@@ -11,7 +11,7 @@ import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SnackbarProvider } from '@/components/base/Snackbar';
 import { useAuthStore } from '@/store/authStore';
-import { supabase } from '@/utils/SupaLegend';
+import { supabase } from '@/utils/supabaseClient';
 
 
 export default function Root() {
@@ -21,7 +21,7 @@ export default function Root() {
   const invertedColorScheme = colorScheme === 'light' ? 'dark' : 'light';
   // Set up the auth context and render our layout inside of it.
 
-  const { setUser, getSession, user } = useAuthStore();
+  const { setUser, getSession, user, setSession } = useAuthStore();
 
 
   useEffect(() => {
@@ -30,8 +30,8 @@ export default function Root() {
 
     // Listen for changes (login/logout/refresh)
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event);
       setUser(session?.user ?? null);
+      setSession(session);
     });
 
 

@@ -1,14 +1,16 @@
 import { create } from 'zustand';
-import { supabase } from '@/utils/SupaLegend';
+import { supabase } from '@/utils/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
 
 type AuthStore = {
   user: User | null;
   userLoading: boolean;
   errorMsg: string | null;
+  session: Session | null;
 
   // actions
   setUser: (user: User | null) => void;
+  setSession: (session: Session | null) => void;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, username: string) => Promise<boolean>;
   signInWithGoogle: () => Promise<void>;
@@ -21,6 +23,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   userLoading: true,
   errorMsg: null,
+  session: null,
+
+  setSession: (session) => set({ session }),
 
   setUser: (user) => set({ user }),
 

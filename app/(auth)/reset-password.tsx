@@ -10,11 +10,12 @@ import SafeAreaView from '@/components/base/MySafeArea';
 import { Button } from '@/components/base/Button';
 import { useColorScheme } from 'nativewind';
 import { router } from 'expo-router';
-import { supabase } from '@/utils/SupaLegend';
+import { supabase } from '@/utils/supabaseClient';
+import { useSnackbar } from '@/components/base/Snackbar';
 
 export default function ResetPassword() {
-  const { colorScheme = 'light' } = useColorScheme();
   const [email, setEmail] = useState('');
+  const snackbar = useSnackbar();
 
   const handlePasswordReset = async (email: string) => {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -23,8 +24,17 @@ export default function ResetPassword() {
 
     if (error) {
       alert("Failed to send reset email: " + error.message);
+      snackbar({
+        message: 'Password reset failed',
+        type: 'error',
+        duration: 5000,
+      });
     } else {
-      alert("Check your inbox for the password reset link.");
+      snackbar({
+        message: 'Password reset email sent! Please check your inbox.',
+        type: 'info',
+        duration: 5000,
+      });
     }
   };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 interface CardProps {
   children: React.ReactNode;
@@ -9,7 +10,7 @@ interface CardProps {
 export function Card({ children, className }: CardProps) {
   return (
     <View className={`bg-card rounded-3xl p-4 ${className || ''}`}>
-      <View>{children}</View>
+      {children}
     </View>
   );
 }
