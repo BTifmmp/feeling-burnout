@@ -29,12 +29,12 @@ FeelingBurnout is a personal project created to explore and learn React Native a
 
 ## Screenshots
 <p float="left">
-  <img src="store/screenshots/1.jpg" width="auto" height=350/>
-  <img src="store/screenshots/2.jpg" width="auto" height=350/>
-  <img src="store/screenshots/3.jpg" width="auto" height=350/>
+  <img src="screenshots/1.jpg" width="auto" height=350/>
+  <img src="screenshots/2.jpg" width="auto" height=350/>
+  <img src="screenshots/3.jpg" width="auto" height=350/>
 </p>
 <p float="left">
-  <img src="store/screenshots/4.jpg" width="auto" height=350/>
-  <img src="store/screenshots/5.jpg" width="auto" height=350/>
-  <img src="store/screenshots/6.jpg" width="auto" height=350/>
+  <img src="screenshots/4.jpg" width="auto" height=350/>
+  <img src="screenshots/5.jpg" width="auto" height=350/>
+  <img src="screenshots/6.jpg" width="auto" height=350/>
 </p>
