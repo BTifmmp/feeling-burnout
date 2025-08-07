@@ -88,7 +88,7 @@ export default function Meditation() {
                 }
               }}
               disabled={!player}
-              icon={accuratePlay ? (
+              icon={!accuratePlay ? (
                 <Play fill={Colors[colorSchemeInverted].textFull} color={Colors[colorSchemeInverted].textFull} size={34} />
               ) : (
                 <Pause fill={Colors[colorSchemeInverted].textFull} color={Colors[colorSchemeInverted].textFull} size={34} />

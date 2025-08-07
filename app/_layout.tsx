@@ -12,11 +12,21 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SnackbarProvider } from '@/components/base/Snackbar';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/utils/supabaseClient';
+import * as NavigationBar from 'expo-navigation-bar';
 
 
 export default function Root() {
   const { colorScheme = 'light' } = useColorScheme(); // your custom theme state
-  SystemUI.setBackgroundColorAsync(Colors[colorScheme].background);
+
+  useEffect(() => {
+    (async () => {
+      await SystemUI.setBackgroundColorAsync(Colors[colorScheme].background);
+      await NavigationBar.setPositionAsync("absolute");
+      await NavigationBar.setBackgroundColorAsync('#ffffff01');
+      await NavigationBar.setButtonStyleAsync(colorScheme === 'light' ? 'dark' : 'light');
+    })();
+  }, [colorScheme]);
+
 
   const invertedColorScheme = colorScheme === 'light' ? 'dark' : 'light';
   // Set up the auth context and render our layout inside of it.

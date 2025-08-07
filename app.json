@@ -1,19 +1,21 @@
 {
-  "name": "feeling-burnout",
+  "name": "feelingburnout",
   "slug": "feeling-burnout",
-  "scheme": "feelingburnout",
+  "scheme": "com.feelingburnout.app",
   "version": "1.0.0",
+  "deepLinking": true,
   "orientation": "portrait",
   "plugins": [
     "expo-router",
-    "expo-audio"
+    "expo-audio",
+    "expo-web-browser"
   ],
   "userInterfaceStyle": "automatic",
   "web": {
     "bundler": "metro"
   },
   "android": {
-    "package": "com.btregit.feelingburnout"
+    "package": "com.feelingburnout.app"
   },
   "extra": {
     "router": {},

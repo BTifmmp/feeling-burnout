@@ -1,6 +1,22 @@
+import { error } from './../node_modules/expo-dev-launcher/node_modules/ajv/lib/vocabularies/applicator/dependencies';
 import { create } from 'zustand';
 import { supabase } from '@/utils/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
+import * as AuthSession from 'expo-auth-session';
+
+const clientId = '1071179724818-qdl9bk2uvb5pr4bg4irrqti6vm1g2eff.apps.googleusercontent.com';
+
+const discovery = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+};
+
+const authConfig : AuthSession.AuthRequestConfig = {
+  clientId: clientId,
+  scopes: ["https://www.googleapis.com/auth/userinfo.profile","https://www.googleapis.com/auth/userinfo.email", 'openid'],
+  redirectUri: AuthSession.makeRedirectUri({scheme: 'com.feelingburnout.app'}),
+};
 
 type AuthStore = {
   user: User | null;
@@ -75,7 +91,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       password,
       options: {
         data: {
-          fullName: username, // Updated to use 'username' field
+          full_name: username, // Updated to use 'username' field
         },
       },
     });
@@ -102,17 +118,50 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   signInWithGoogle: async () => {
-    set((prev) => ({ ...prev, userLoading: true, errorMsg: null }));
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: 'YOUR_APP_DEEPLINK_URL',
+    set((prev: any) => ({ ...prev, userLoading: true, errorMsg: null }));
+
+  const request = new AuthSession.AuthRequest(authConfig);
+  const response = await request.promptAsync(discovery, {showInRecents: true}); 
+
+  if (response.type !== 'success') {
+    set((prev: any) => ({ ...prev, userLoading: false, errorMsg: 'Google sign-in failed' }));
+    return;
+  }
+
+  if (response?.type === 'success') {
+  const { code } = response.params;
+
+  const tokenResult: AuthSession.TokenResponse = await AuthSession.exchangeCodeAsync(
+    {
+      clientId: authConfig.clientId,
+      code,
+      redirectUri: authConfig.redirectUri,
+      extraParams: {
+        code_verifier: request.codeVerifier || '',
       },
-    });
+    },
+    discovery
+  );
+
+
+  if (tokenResult.idToken) {
+    const {data, error} = await supabase.auth.signInWithIdToken({
+      provider: 'google',
+      token: tokenResult.idToken,
+      access_token: tokenResult.accessToken,
+    })
 
     if (error) {
-      set((prev) => ({ ...prev, errorMsg: error.message, userLoading: false }));
+      set((prev: any) => ({ ...prev, userLoading: false, errorMsg: error.message }));
+      return;
+    } else {
+      set((prev: any) => ({ ...prev, user: data.user, userLoading: false }));
+      return;
     }
+  }}
+
+  set((prev: any) => ({ ...prev, userLoading: false, errorMsg: 'Google sign-in failed' }));
+
   },
 
   signOut: async () => {

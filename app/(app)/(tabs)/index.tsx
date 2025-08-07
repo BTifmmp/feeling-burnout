@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, Pressable } from 'react-native'
 import React, { useEffect } from 'react'
 import SafeAreaView from '@/components/base/MySafeArea'
 import StatusBarColor from '@/components/base/StatusBarColor'
@@ -16,10 +16,12 @@ import { Calendar, ChevronRight } from 'lucide-react-native'
 import { StyleSheet } from 'react-native';
 import { router } from 'expo-router'
 import EasyAccessMoods from '@/components/pages/main/EasyAccessMoods'
+import { useAuthStore } from '@/store/authStore'
 
 
 export default function HomeScreen() {
   const { colorScheme = "light" } = useColorScheme();
+  const { user } = useAuthStore();
 
   return (
     <View className='flex-1'>
@@ -34,7 +36,7 @@ export default function HomeScreen() {
               <BottomWaveCard>
                 <View className='flex-row justify-between items-start'>
                   <Text className='text-4xl font-extrabold text-text-primary mt-1'>
-                    Hi user
+                    Hi {user?.user_metadata.full_name.split(" ")[0] || ''}!
                   </Text>
                   <IconButton onPress={() => { router.push('mood-calendar') }} icon={<Calendar size={22} color={Colors[colorScheme].textPrimary} />} />
 
@@ -47,8 +49,8 @@ export default function HomeScreen() {
 
               <View className='px-sides mt-10 mb-8'>
                 <View className='flex-row gap-4'>
-                  <InfoCard type='chat' containerClass='flex-1' />
-                  <InfoCard type='breathing' containerClass='flex-1' />
+                  <Pressable className='flex-1' onPress={() => { router.push('/relax') }} ><InfoCard type='chat' containerClass='flex-1' /></Pressable>
+                  <Pressable className='flex-1' onPress={() => { router.push('/relax') }} ><InfoCard type='breathing' containerClass='flex-1' /></Pressable>
                 </View>
 
                 <TopCardTitle title='Goals & Bounderies' className='mt-10' />

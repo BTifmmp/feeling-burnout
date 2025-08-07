@@ -42,7 +42,7 @@ export function DayCell({ mood, date }: DayCellProps) {
   return (
     <Button
       onPress={handlePress}
-      variant={isSelected ? 'highlight200' : 'ghost'} // highlight selected mood cell
+      variant={isSelected ? 'highlight100' : 'ghost'} // highlight selected mood cell
       style={{
         paddingVertical: 0,
         paddingHorizontal: 0,

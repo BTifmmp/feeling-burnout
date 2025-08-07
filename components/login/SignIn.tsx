@@ -12,7 +12,7 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { signIn, errorMsg, clearError, userLoading } = useAuthStore();
+  const { signIn, errorMsg, clearError, userLoading, signInWithGoogle } = useAuthStore();
 
   useEffect(() => { clearError() }, []);
 
@@ -60,7 +60,7 @@ export default function SignIn() {
         disabled={userLoading}
         title="Sign In"
       />
-      <GoogleSignButton text='Sign in with Google' />
+      <GoogleSignButton disabled={userLoading} text='Sign in with Google' onPress={() => { signInWithGoogle() }} />
     </Animated.View>
   );
 }

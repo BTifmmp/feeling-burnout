@@ -16,11 +16,11 @@ export const Themes = {
   "--color-gray-highlight-100": "#f0f0f0",
   "--color-gray-highlight-200": "#e0e0e0",
   "--color-gray-highlight-300": "#c0c0c0",
-  "--color-mood-colors-0": "#FF8585",
-  "--color-mood-colors-1": "#FFC267",
-  "--color-mood-colors-2": "#FFE98A",
-  "--color-mood-colors-3": "#A4EDAB",
-  "--color-mood-colors-4": "#6EEA84"
+  "--color-mood-colors-0": "#fF6C7B",
+  "--color-mood-colors-1": "#fFb056",
+  "--color-mood-colors-2": "#FFE87A",
+  "--color-mood-colors-3": "#84d190",
+  "--color-mood-colors-4": "#5eb55b"
 }),
     dark: vars({
   "--color-background": "#151515",
@@ -36,11 +36,11 @@ export const Themes = {
   "--color-gray-highlight-100": "#383838",
   "--color-gray-highlight-200": "#404040",
   "--color-gray-highlight-300": "#484848",
-  "--color-mood-colors-0": "#FF6B6B",
-  "--color-mood-colors-1": "#ffb957",
-  "--color-mood-colors-2": "#ffe375",
-  "--color-mood-colors-3": "#8ce693",
-  "--color-mood-colors-4": "#49d66a"
+  "--color-mood-colors-0": "#fF6C7B",
+  "--color-mood-colors-1": "#fFb056",
+  "--color-mood-colors-2": "#FFE87A",
+  "--color-mood-colors-3": "#84d190",
+  "--color-mood-colors-4": "#5eb55b"
 })
   }
 };

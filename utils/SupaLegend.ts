@@ -47,7 +47,7 @@ export const moods$ = observable(
     supabase,
     collection: 'moods',
     select: (from) =>
-      from.select('id, mood_value, at_local_time_added'),
+      from.select('id, mood_value, at_local_time_added, deleted'),
     actions: ['read', 'create', 'update'],
     filter: (select) => select.eq('user_id', userId$.get()),
     realtime: { filter: `user_id=eq.${userId$.get()}` },
@@ -67,7 +67,7 @@ export const journals$ = observable(
     supabase,
     collection: 'journals',
     select: (from) =>
-      from.select('id, entry, badge, at_local_time_added'),
+      from.select('id, entry, badge, at_local_time_added, deleted'),
     actions: ['read', 'create', 'update'],
     filter: (select) => select.eq('user_id', userId$.get()),
     realtime: { filter: `user_id=eq.${userId$.get()}` },
@@ -87,7 +87,7 @@ export const goals$ = observable(
     supabase,
     collection: 'goals',
     select: (from) =>
-      from.select('id, text, at_local_time_added'),
+      from.select('id, text, at_local_time_added, deleted'),
     actions: ['read', 'create', 'update'],
     filter: (select) => select.eq('user_id', userId$.get()),
     realtime: { filter: `user_id=eq.${userId$.get()}` },

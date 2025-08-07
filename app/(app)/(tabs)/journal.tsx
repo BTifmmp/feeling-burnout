@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import SafeAreaView from '@/components/base/MySafeArea';
 import { format, isValid } from 'date-fns';
 import { useColorScheme } from 'nativewind';
 import Animated, { FadeIn, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Calendar1Icon, Edit, Plus, Trash, X } from 'lucide-react-native';
+import { Calendar, Edit, Plus, Trash, X } from 'lucide-react-native';
 import { Colors } from '@/constants/themes';
 import { router } from 'expo-router';
 import MoodBadge, { moodStyleMap, MoodType } from '@/components/pages/journal/MoodBadge';
@@ -126,6 +126,11 @@ const Journal = observer(() => {
   }, []);
 
   const listEmptyComponent = useMemo(() => {
+    if (!hasJournalLoaded) {
+      return (<View className="flex-1 mt-10 items-center justify-center">
+        <ActivityIndicator />
+      </View>)
+    }
     return (
       <Text className="text-2xl text-text-primary mt-8">
         {selectedBadge === selectedBadgeDelay && selectedDate === selectedDateDelay && hasJournalLoaded ? 'No journal entries' : ''}
@@ -148,7 +153,7 @@ const Journal = observer(() => {
             <IconButton
               variant='ghost'
               onPress={showModal}
-              icon={<Calendar1Icon size={20} color={Colors[colorScheme].textPrimary} />}
+              icon={<Calendar size={22} color={Colors[colorScheme].textPrimary} />}
             />
           </View>
         </View>

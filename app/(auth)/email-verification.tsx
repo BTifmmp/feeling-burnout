@@ -8,11 +8,6 @@ import { useAuthStore } from '@/store/authStore';
 export default function VerifyEmail() {
   const { signOut } = useAuthStore();
 
-  const handleResendEmail = () => {
-    // Trigger Supabase resend here
-    console.log('Resend verification email');
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={{ top: true, bottom: true }}>
       <View className="flex-1 px-8">
